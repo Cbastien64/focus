@@ -1,8 +1,7 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Task, Tag, TaskPriority, TaskStatus } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 interface TaskContextProps {
   tasks: Task[];
@@ -126,7 +125,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const deleteTag = (id: string) => {
-    // Remove tag from all tasks that have it
     setTasks((prevTasks) =>
       prevTasks.map((task) => ({
         ...task,
@@ -135,7 +133,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }))
     );
     
-    // Delete the tag
     setTags((prevTags) => prevTags.filter((tag) => tag.id !== id));
     toast.success('Tag supprimé');
   };
