@@ -1,8 +1,7 @@
-
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { TimerSettings, TimerState, TimerType } from '@/types';
 import { useTaskContext } from './TaskContext';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 interface TimerContextProps {
   settings: TimerSettings;
@@ -38,27 +37,21 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const intervalRef = useRef<number | null>(null);
   const { incrementTaskTime } = useTaskContext();
 
-  // Effect to handle the timer countdown
   useEffect(() => {
     if (timerState.isRunning) {
       intervalRef.current = window.setInterval(() => {
         setTimerState((prev) => {
           const newTimeRemaining = prev.timeRemaining - 1;
           
-          // If the timer reaches zero
           if (newTimeRemaining <= 0) {
             clearInterval(intervalRef.current!);
-            
-            // Play notification sound
             const audio = new Audio('/notification.mp3');
             audio.play().catch(error => console.error('Error playing notification sound:', error));
             
-            // If a task is associated with the timer and it's a focus session
             if (prev.currentTaskId && prev.type === 'focus') {
               incrementTaskTime(prev.currentTaskId, settings.focusDuration * 60);
             }
             
-            // Determine next timer type
             let nextType: TimerType = 'shortBreak';
             let completedSessions = prev.completedSessions;
             
@@ -80,7 +73,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               }
             }
             
-            // Set duration based on next timer type
             let nextDuration = 0;
             switch (nextType) {
               case 'focus':
@@ -108,7 +100,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }, 1000);
     }
     
-    // Cleanup interval when timer is paused or component unmounts
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -116,7 +107,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [timerState.isRunning, settings, incrementTaskTime]);
 
-  // Effect to update time remaining when settings change
   useEffect(() => {
     if (!timerState.isRunning) {
       let newTimeRemaining = 0;
@@ -133,13 +123,11 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           break;
       }
       
-      // Only update if the timer is not running to avoid disruption
       setTimerState((prev) => ({
         ...prev,
         timeRemaining: newTimeRemaining,
       }));
       
-      // Update CSS variable for animation
       document.documentElement.style.setProperty('--timer-duration', `${newTimeRemaining}s`);
     }
   }, [settings, timerState.type, timerState.isRunning]);
@@ -179,8 +167,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const skipTimer = () => {
-    // If a task is associated with the timer and it's a focus session,
-    // increment the time spent by the current elapsed time
     if (timerState.currentTaskId && timerState.type === 'focus') {
       const totalSessionTime = settings.focusDuration * 60;
       const elapsedTime = totalSessionTime - timerState.timeRemaining;
@@ -190,7 +176,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
     
-    // Determine next timer type
     let nextType: TimerType = 'shortBreak';
     let completedSessions = timerState.completedSessions;
     
@@ -206,7 +191,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       nextType = 'focus';
     }
     
-    // Set duration based on next timer type
     let nextDuration = 0;
     switch (nextType) {
       case 'focus':
