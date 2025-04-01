@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,18 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom focus-mix colors
+				focus: {
+					DEFAULT: '#6366f1',
+					light: '#a5b4fc',
+					dark: '#4f46e5'
+				},
+				eisenhower: {
+					urgent: '#f87171',
+					important: '#60a5fa',
+					both: '#8b5cf6',
+					neither: '#94a3b8'
 				}
 			},
 			borderRadius: {
@@ -84,11 +97,20 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'timer-progress': {
+					'0%': { 
+						strokeDashoffset: '0' 
+					},
+					'100%': { 
+						strokeDashoffset: 'var(--timer-progress-offset)' 
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'timer-progress': 'timer-progress var(--timer-duration) linear forwards'
 			}
 		}
 	},

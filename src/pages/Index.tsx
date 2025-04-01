@@ -1,13 +1,239 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import MainLayout from '@/components/layout/MainLayout';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Clock, CheckSquare, LayoutGrid, CalendarRange, Tag } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useTaskContext } from '@/context/TaskContext';
+import { useTimerContext } from '@/context/TimerContext';
+import TaskCard from '@/components/tasks/TaskCard';
+import TimerDisplay from '@/components/timer/TimerDisplay';
 
 const Index = () => {
+  const { tasks } = useTaskContext();
+  const { timerState } = useTimerContext();
+  
+  // Get today's tasks (tasks added today)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const todayTasks = tasks.filter((task) => {
+    const taskDate = new Date(task.createdAt);
+    taskDate.setHours(0, 0, 0, 0);
+    return taskDate.getTime() === today.getTime() && task.status !== 'completed';
+  });
+  
+  // Get priority tasks (urgent & important)
+  const priorityTasks = tasks.filter(
+    (task) => task.priority === 'both' && task.status !== 'completed'
+  ).slice(0, 3);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <MainLayout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Tableau de bord</h1>
+          <Link to="/tasks">
+            <Button className="gap-1 bg-focus hover:bg-focus-dark">
+              <CheckSquare className="h-4 w-4" />
+              <span>Toutes les tâches</span>
+            </Button>
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Tâches totales</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{tasks.length}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">À faire</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {tasks.filter((t) => t.status === 'todo').length}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Urgentes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {tasks.filter((t) => t.priority === 'both' || t.priority === 'urgent').length}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Tâches du jour</CardTitle>
+                <CardDescription>
+                  Tâches créées aujourd'hui
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {todayTasks.length > 0 ? (
+                  <div className="space-y-4">
+                    {todayTasks.slice(0, 3).map((task) => (
+                      <div
+                        key={task.id}
+                        className="p-3 bg-muted/50 rounded-md flex items-center justify-between"
+                      >
+                        <div>
+                          <h4 className="font-medium">{task.title}</h4>
+                          <p className="text-sm text-muted-foreground">{task.description}</p>
+                        </div>
+                        <Link to="/timer">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-1"
+                          >
+                            <Clock className="h-4 w-4" />
+                            <span>Focus</span>
+                          </Button>
+                        </Link>
+                      </div>
+                    ))}
+                    
+                    {todayTasks.length > 3 && (
+                      <Link to="/tasks" className="block text-sm text-focus hover:underline text-center mt-4">
+                        Voir {todayTasks.length - 3} autres tâches
+                      </Link>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Aucune tâche créée aujourd'hui</p>
+                    <Link to="/tasks" className="mt-2 inline-block">
+                      <Button variant="outline" size="sm">
+                        Créer une tâche
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Tâches prioritaires</CardTitle>
+                <CardDescription>
+                  Tâches urgentes et importantes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {priorityTasks.length > 0 ? (
+                  <div className="space-y-4">
+                    {priorityTasks.map((task) => (
+                      <TaskCard key={task.id} task={task} onEdit={() => {}} />
+                    ))}
+                    
+                    {tasks.filter((t) => t.priority === 'both' && t.status !== 'completed').length > 3 && (
+                      <Link to="/matrix" className="block text-sm text-focus hover:underline text-center mt-4">
+                        Voir toutes les tâches prioritaires
+                      </Link>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Aucune tâche prioritaire</p>
+                    <Link to="/matrix" className="mt-2 inline-block">
+                      <Button variant="outline" size="sm">
+                        Voir la matrice d'Eisenhower
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="space-y-6">
+            <Card className="overflow-hidden">
+              <CardHeader>
+                <CardTitle>Timer</CardTitle>
+                <CardDescription>
+                  {timerState.type === 'focus'
+                    ? 'Session de concentration'
+                    : timerState.type === 'shortBreak'
+                    ? 'Courte pause'
+                    : 'Longue pause'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-center pb-6">
+                <TimerDisplay />
+              </CardContent>
+              <CardFooter className="bg-muted/50 justify-center">
+                <Link to="/timer">
+                  <Button variant="outline" size="sm">
+                    Voir le timer complet
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Navigation rapide</CardTitle>
+                <CardDescription>
+                  Accédez aux principales fonctionnalités
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-2">
+                <Link to="/tasks">
+                  <Button variant="outline" className="w-full justify-start gap-2">
+                    <CheckSquare className="h-4 w-4 text-focus" />
+                    <span>Tâches</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/timer">
+                  <Button variant="outline" className="w-full justify-start gap-2">
+                    <Clock className="h-4 w-4 text-focus" />
+                    <span>Timer Pomodoro</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/matrix">
+                  <Button variant="outline" className="w-full justify-start gap-2">
+                    <LayoutGrid className="h-4 w-4 text-focus" />
+                    <span>Matrice d'Eisenhower</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/calendar">
+                  <Button variant="outline" className="w-full justify-start gap-2">
+                    <CalendarRange className="h-4 w-4 text-focus" />
+                    <span>Agenda</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/tags">
+                  <Button variant="outline" className="w-full justify-start gap-2">
+                    <Tag className="h-4 w-4 text-focus" />
+                    <span>Gestion des tags</span>
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
