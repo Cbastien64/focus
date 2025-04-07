@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Task, Tag, TaskPriority, TaskStatus } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +12,7 @@ interface TaskContextProps {
   deleteTask: (id: string) => void;
   duplicateTask: (id: string) => void;
   addTag: (name: string, color: string) => void;
+  updateTag: (id: string, tag: Partial<Tag>) => void;
   deleteTag: (id: string) => void;
   incrementTaskTime: (id: string, seconds: number) => void;
 }
@@ -124,6 +126,32 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.success('Projet ajouté');
   };
 
+  const updateTag = (id: string, tag: Partial<Tag>) => {
+    // Update the tag in the tags array
+    setTags((prevTags) =>
+      prevTags.map((t) =>
+        t.id === id ? { ...t, ...tag } : t
+      )
+    );
+
+    // Update the tag references in all tasks
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        const updatedTags = task.tags.map((t) =>
+          t.id === id ? { ...t, ...tag } : t
+        );
+        
+        return {
+          ...task,
+          tags: updatedTags,
+          updatedAt: new Date(),
+        };
+      })
+    );
+    
+    toast.success('Projet mis à jour');
+  };
+
   const deleteTag = (id: string) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) => ({
@@ -161,6 +189,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteTask,
         duplicateTask,
         addTag,
+        updateTag,
         deleteTag,
         incrementTaskTime,
       }}

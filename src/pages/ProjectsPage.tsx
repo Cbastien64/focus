@@ -4,7 +4,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import { useTaskContext } from '@/context/TaskContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash, Info } from 'lucide-react';
+import { Plus, Trash, Info, Edit } from 'lucide-react';
 import { Tag } from '@/types';
 import {
   AlertDialog,
@@ -27,11 +27,13 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 
-const TagsPage = () => {
-  const { tags, addTag, deleteTag, tasks } = useTaskContext();
+const ProjectsPage = () => {
+  const { tags, addTag, deleteTag, updateTag, tasks } = useTaskContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('#4f46e5');
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
   
   const handleAddTag = () => {
     if (tagName.trim()) {
@@ -40,6 +42,24 @@ const TagsPage = () => {
       setTagColor('#4f46e5');
       setIsDialogOpen(false);
     }
+  };
+
+  const handleEditTag = () => {
+    if (editingTag && tagName.trim()) {
+      updateTag(editingTag.id, {
+        name: tagName,
+        color: tagColor
+      });
+      setIsEditDialogOpen(false);
+      setEditingTag(null);
+    }
+  };
+
+  const openEditDialog = (tag: Tag) => {
+    setEditingTag(tag);
+    setTagName(tag.name);
+    setTagColor(tag.color);
+    setIsEditDialogOpen(true);
   };
   
   // Count tasks using a specific tag
@@ -86,6 +106,15 @@ const TagsPage = () => {
                         <Info className="h-3 w-3" />
                         {getTagUsageCount(tag.id)} tâche{getTagUsageCount(tag.id) !== 1 ? 's' : ''}
                       </span>
+
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="h-7 w-7" 
+                        onClick={() => openEditDialog(tag)}
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -127,6 +156,7 @@ const TagsPage = () => {
         </Card>
       </div>
       
+      {/* Add Project Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -171,8 +201,54 @@ const TagsPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Project Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier le projet</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="editTagName">Nom du projet</Label>
+              <Input
+                id="editTagName"
+                value={tagName}
+                onChange={(e) => setTagName(e.target.value)}
+                placeholder="ex: Travail, Personnel, Urgent..."
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="editTagColor">Couleur</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="editTagColor"
+                  type="color"
+                  value={tagColor}
+                  onChange={(e) => setTagColor(e.target.value)}
+                  className="w-16 h-10 p-1"
+                />
+                <div
+                  className="flex-1 rounded-md flex items-center justify-center text-white font-medium"
+                  style={{ backgroundColor: tagColor }}
+                >
+                  Aperçu
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button onClick={handleEditTag} className="bg-focus hover:bg-focus-dark">
+              Mettre à jour
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };
 
-export default TagsPage;
+export default ProjectsPage;

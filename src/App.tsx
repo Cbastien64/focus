@@ -1,43 +1,37 @@
 
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { TaskProvider } from "./context/TaskContext";
-import { TimerProvider } from "./context/TimerContext";
-import Index from "./pages/Index";
-import TasksPage from "./pages/TasksPage";
-import TimerPage from "./pages/TimerPage";
-import MatrixPage from "./pages/MatrixPage";
-import TagsPage from "./pages/TagsPage";
-import DataPage from "./pages/DataPage";
-import NotFound from "./pages/NotFound";
+import { TaskProvider } from '@/context/TaskContext';
+import { TimerProvider } from '@/context/TimerContext';
+import Index from '@/pages/Index';
+import TasksPage from '@/pages/TasksPage';
+import TimerPage from '@/pages/TimerPage';
+import MatrixPage from '@/pages/MatrixPage';
+import NotFound from '@/pages/NotFound';
+import ProjectsPage from '@/pages/ProjectsPage';
+import DataPage from '@/pages/DataPage';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <TaskProvider>
-        <TimerProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/tasks" element={<TasksPage />} />
-              <Route path="/timer" element={<TimerPage />} />
-              <Route path="/matrix" element={<MatrixPage />} />
-              <Route path="/tags" element={<TagsPage />} />
-              <Route path="/data" element={<DataPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TimerProvider>
-      </TaskProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <TaskProvider>
+      <TimerProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/timer" element={<TimerPage />} />
+            <Route path="/matrix" element={<MatrixPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/tags" element={<ProjectsPage />} />
+            <Route path="/data" element={<DataPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+        <Toaster />
+      </TimerProvider>
+    </TaskProvider>
+  );
+}
 
 export default App;
