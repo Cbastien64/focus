@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   SidebarFooter
 } from '@/components/ui/sidebar';
-import { CheckSquare, Clock, LayoutGrid, Calendar, Settings, Tag, Home } from 'lucide-react';
+import { CheckSquare, Clock, LayoutGrid, Calendar, Settings, Tag, Home, BarChart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
@@ -28,6 +28,7 @@ const Sidebar: React.FC = () => {
     { title: "Matrice", icon: LayoutGrid, path: "/matrix" },
     { title: "Agenda", icon: Calendar, path: "/calendar" },
     { title: "Tags", icon: Tag, path: "/tags" },
+    { title: "Données", icon: BarChart, path: "/data" },
   ];
 
   return (

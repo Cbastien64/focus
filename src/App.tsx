@@ -11,8 +11,8 @@ import TasksPage from "./pages/TasksPage";
 import TimerPage from "./pages/TimerPage";
 import MatrixPage from "./pages/MatrixPage";
 import TagsPage from "./pages/TagsPage";
+import DataPage from "./pages/DataPage";
 import NotFound from "./pages/NotFound";
-import { v4 as uuidv4 } from 'uuid';
 
 const queryClient = new QueryClient();
 
@@ -30,6 +30,7 @@ const App = () => (
               <Route path="/timer" element={<TimerPage />} />
               <Route path="/matrix" element={<MatrixPage />} />
               <Route path="/tags" element={<TagsPage />} />
+              <Route path="/data" element={<DataPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
