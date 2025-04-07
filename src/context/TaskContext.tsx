@@ -17,20 +17,20 @@ interface TaskContextProps {
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
 
-// Sample tags
+// Domaines de projet initiaux
 const initialTags: Tag[] = [
-  { id: uuidv4(), name: 'Work', color: '#4f46e5' },
-  { id: uuidv4(), name: 'Personal', color: '#ec4899' },
-  { id: uuidv4(), name: 'Study', color: '#0ea5e9' },
-  { id: uuidv4(), name: 'Health', color: '#10b981' },
+  { id: uuidv4(), name: 'Travail', color: '#4f46e5' },
+  { id: uuidv4(), name: 'Personnel', color: '#ec4899' },
+  { id: uuidv4(), name: 'Études', color: '#0ea5e9' },
+  { id: uuidv4(), name: 'Santé', color: '#10b981' },
 ];
 
 // Sample tasks
 const initialTasks: Task[] = [
   {
     id: uuidv4(),
-    title: 'Créer une présentation pour la réunion',
-    description: 'Préparer une présentation PowerPoint sur le nouveau projet',
+    title: 'Créer une présentation pour la réunion #presentation #reunion',
+    description: 'Préparer une présentation PowerPoint sur le nouveau projet #projet',
     priority: 'both',
     status: 'todo',
     tags: [initialTags[0]],
@@ -40,8 +40,8 @@ const initialTasks: Task[] = [
   },
   {
     id: uuidv4(),
-    title: 'Faire du sport',
-    description: '30 minutes de course à pied',
+    title: 'Faire du sport #fitness',
+    description: '30 minutes de course à pied #running',
     priority: 'important',
     status: 'todo',
     tags: [initialTags[3]],
@@ -51,8 +51,8 @@ const initialTasks: Task[] = [
   },
   {
     id: uuidv4(),
-    title: 'Répondre aux emails',
-    description: 'Traiter les emails importants en attente',
+    title: 'Répondre aux emails #communication',
+    description: 'Traiter les emails importants en attente #urgent',
     priority: 'urgent',
     status: 'todo',
     tags: [initialTags[0]],
@@ -121,7 +121,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     setTags((prevTags) => [...prevTags, newTag]);
-    toast.success('Tag ajouté');
+    toast.success('Domaine de projet ajouté');
   };
 
   const deleteTag = (id: string) => {
@@ -134,7 +134,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
     
     setTags((prevTags) => prevTags.filter((tag) => tag.id !== id));
-    toast.success('Tag supprimé');
+    toast.success('Domaine de projet supprimé');
   };
 
   const incrementTaskTime = (id: string, seconds: number) => {

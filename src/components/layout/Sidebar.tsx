@@ -27,7 +27,7 @@ const Sidebar: React.FC = () => {
     { title: "Timer", icon: Clock, path: "/timer" },
     { title: "Matrice", icon: LayoutGrid, path: "/matrix" },
     { title: "Agenda", icon: Calendar, path: "/calendar" },
-    { title: "Tags", icon: Tag, path: "/tags" },
+    { title: "Domaines", icon: Tag, path: "/tags" },
     { title: "Données", icon: BarChart, path: "/data" },
   ];
 

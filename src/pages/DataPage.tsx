@@ -1,3 +1,4 @@
+
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,10 +43,41 @@ const DataPage = () => {
     { name: 'Terminé', value: tasksByStatus.completed },
   ];
   
-  const tagData = tags.map(tag => ({
-    name: tag.name,
-    count: tasks.filter(task => task.tags.some(t => t.id === tag.id)).length,
-  }));
+  // Renommer "tags" en "domaines de projet" et calculer le temps passé par domaine
+  const domainData = tags.map(tag => {
+    const tasksInDomain = tasks.filter(task => task.tags.some(t => t.id === tag.id));
+    const timeSpentInDomain = tasksInDomain.reduce((total, task) => total + task.timeSpent, 0) / 60;
+    
+    return {
+      name: tag.name,
+      count: tasksInDomain.length,
+      temps: Math.round(timeSpentInDomain),
+    };
+  });
+  
+  // Extraire les hashtags (#) du texte des tâches
+  const extractHashtags = (text) => {
+    const hashtagRegex = /#[\w-]+/g;
+    return text.match(hashtagRegex) || [];
+  };
+  
+  // Compter les occurrences de hashtags dans toutes les tâches
+  const hashtagCounts = {};
+  tasks.forEach(task => {
+    const titleTags = extractHashtags(task.title);
+    const descriptionTags = extractHashtags(task.description);
+    const allTags = [...titleTags, ...descriptionTags];
+    
+    allTags.forEach(tag => {
+      hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+    });
+  });
+  
+  // Convertir en format pour le graphique
+  const hashtagData = Object.entries(hashtagCounts)
+    .map(([tag, count]) => ({ name: tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10); // Montrer les 10 hashtags les plus utilisés
   
   const taskTimeData = [...tasks]
     .sort((a, b) => b.timeSpent - a.timeSpent)
@@ -158,7 +190,7 @@ const DataPage = () => {
           </Card>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <Card>
             <CardHeader>
               <CardTitle>Temps par tâche (top 5)</CardTitle>
@@ -187,12 +219,40 @@ const DataPage = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Tâches par tag</CardTitle>
+              <CardTitle>Temps par domaine de projet</CardTitle>
             </CardHeader>
             <CardContent className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={tagData}
+                  data={domainData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'Minutes', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="temps" fill="#82ca9d" name="Temps (min)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tâches par domaine de projet</CardTitle>
+            </CardHeader>
+            <CardContent className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={domainData}
                   margin={{
                     top: 5,
                     right: 30,
@@ -206,6 +266,32 @@ const DataPage = () => {
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="count" fill="#82ca9d" name="Nombre de tâches" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Tags populaires (#hashtags)</CardTitle>
+            </CardHeader>
+            <CardContent className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={hashtagData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" fill="#8884d8" name="Occurrences" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
