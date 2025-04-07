@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -158,7 +157,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
           </div>
           
           <div className="space-y-2">
-            <Label>Tags</Label>
+            <Label>Projets</Label>
             <div className="flex flex-wrap gap-2 p-2 border rounded-md">
               {tags.map((tag) => (
                 <Badge
@@ -183,7 +182,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
                 </Badge>
               ))}
               {tags.length === 0 && (
-                <span className="text-sm text-muted-foreground">Aucun tag disponible</span>
+                <span className="text-sm text-muted-foreground">Aucun projet disponible</span>
               )}
             </div>
           </div>

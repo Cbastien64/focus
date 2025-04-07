@@ -85,7 +85,7 @@ const TaskGrid: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Filtrer par tag</DropdownMenuLabel>
+              <DropdownMenuLabel>Filtrer par projet</DropdownMenuLabel>
               {tags.map((tag) => (
                 <DropdownMenuCheckboxItem
                   key={tag.id}

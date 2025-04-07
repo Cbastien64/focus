@@ -17,7 +17,7 @@ interface TaskContextProps {
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
 
-// Domaines de projet initiaux
+// Projets initiaux
 const initialTags: Tag[] = [
   { id: uuidv4(), name: 'Travail', color: '#4f46e5' },
   { id: uuidv4(), name: 'Personnel', color: '#ec4899' },
@@ -121,7 +121,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     setTags((prevTags) => [...prevTags, newTag]);
-    toast.success('Domaine de projet ajouté');
+    toast.success('Projet ajouté');
   };
 
   const deleteTag = (id: string) => {
@@ -134,7 +134,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
     
     setTags((prevTags) => prevTags.filter((tag) => tag.id !== id));
-    toast.success('Domaine de projet supprimé');
+    toast.success('Projet supprimé');
   };
 
   const incrementTaskTime = (id: string, seconds: number) => {

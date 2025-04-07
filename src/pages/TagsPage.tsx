@@ -51,19 +51,19 @@ const TagsPage = () => {
     <MainLayout>
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Gestion des Tags</h1>
+          <h1 className="text-2xl font-bold">Gestion des Projets</h1>
           <Button 
             onClick={() => setIsDialogOpen(true)}
             className="gap-1 bg-focus hover:bg-focus-dark"
           >
             <Plus className="h-4 w-4" />
-            <span>Nouveau Tag</span>
+            <span>Nouveau Projet</span>
           </Button>
         </div>
         
         <Card>
           <CardHeader>
-            <CardTitle>Tags disponibles</CardTitle>
+            <CardTitle>Projets disponibles</CardTitle>
           </CardHeader>
           <CardContent>
             {tags.length > 0 ? (
@@ -95,9 +95,9 @@ const TagsPage = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer ce tag?</AlertDialogTitle>
+                            <AlertDialogTitle>Supprimer ce projet?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Cette action ne peut pas être annulée. Ce tag sera supprimé de toutes les tâches qui l'utilisent.
+                              Cette action ne peut pas être annulée. Ce projet sera supprimé de toutes les tâches qui l'utilisent.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -114,12 +114,12 @@ const TagsPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-muted-foreground mb-4">Aucun tag disponible</p>
+                <p className="text-muted-foreground mb-4">Aucun projet disponible</p>
                 <Button 
                   variant="outline"
                   onClick={() => setIsDialogOpen(true)}
                 >
-                  Créer un tag
+                  Créer un projet
                 </Button>
               </div>
             )}
@@ -130,12 +130,12 @@ const TagsPage = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ajouter un nouveau tag</DialogTitle>
+            <DialogTitle>Ajouter un nouveau projet</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="tagName">Nom du tag</Label>
+              <Label htmlFor="tagName">Nom du projet</Label>
               <Input
                 id="tagName"
                 value={tagName}
