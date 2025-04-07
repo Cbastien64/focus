@@ -1,4 +1,3 @@
-
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +16,7 @@ const DataPage = () => {
     urgent: tasks.filter(task => task.priority === 'urgent').length,
     important: tasks.filter(task => task.priority === 'important').length,
     both: tasks.filter(task => task.priority === 'both').length,
-    none: tasks.filter(task => task.priority === 'none').length,
+    neither: tasks.filter(task => task.priority === 'neither').length,
   };
   
   const tasksByStatus = {
@@ -34,7 +33,7 @@ const DataPage = () => {
     { name: 'Urgent & Important', value: tasksByPriority.both },
     { name: 'Urgent', value: tasksByPriority.urgent },
     { name: 'Important', value: tasksByPriority.important },
-    { name: 'Autre', value: tasksByPriority.none },
+    { name: 'Autre', value: tasksByPriority.neither },
   ];
   
   const statusData = [
@@ -48,16 +47,14 @@ const DataPage = () => {
     count: tasks.filter(task => task.tags.some(t => t.id === tag.id)).length,
   }));
   
-  // Temps par tâche (top 5 des tâches qui ont pris le plus de temps)
   const taskTimeData = [...tasks]
     .sort((a, b) => b.timeSpent - a.timeSpent)
     .slice(0, 5)
     .map(task => ({
       name: task.title,
-      temps: Math.round(task.timeSpent / 60), // Conversion en minutes
+      temps: Math.round(task.timeSpent / 60),
     }));
   
-  // Couleurs pour les graphiques
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
   
   return (
