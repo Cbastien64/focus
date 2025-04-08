@@ -34,7 +34,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
   const [status, setStatus] = useState<TaskStatus>('todo');
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [hashtags, setHashtags] = useState('');
-  const [assignedToId, setAssignedToId] = useState<string | ''>('');
+  const [assignedToId, setAssignedToId] = useState<string | null>(null);
   
   // Reset form when dialog opens/closes or task changes
   useEffect(() => {
@@ -45,7 +45,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       setStatus(task.status);
       setSelectedTags(task.tags);
       setHashtags(task.hashtags ? task.hashtags.map(tag => `#${tag}`).join(' ') : '');
-      setAssignedToId(task.assignedTo?.id || '');
+      setAssignedToId(task.assignedTo?.id || null);
     } else {
       setTitle('');
       setDescription('');
@@ -53,7 +53,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       setStatus('todo');
       setSelectedTags([]);
       setHashtags('');
-      setAssignedToId('');
+      setAssignedToId(null);
     }
   }, [task, open]);
   
@@ -272,15 +272,15 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
           <div className="space-y-2">
             <Label htmlFor="assignedTo">Attribuer à un collaborateur</Label>
             <Select 
-              value={assignedToId} 
-              onValueChange={(value) => setAssignedToId(value)}
+              value={assignedToId || "none"} 
+              onValueChange={(value) => setAssignedToId(value === "none" ? null : value)}
             >
               <SelectTrigger id="assignedTo">
                 <SelectValue placeholder="Sélectionner un collaborateur" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="">Non attribuée</SelectItem>
+                  <SelectItem value="none">Non attribuée</SelectItem>
                   {collaborators.map((collaborator) => (
                     <SelectItem key={collaborator.id} value={collaborator.id}>
                       {collaborator.firstName} {collaborator.lastName}
