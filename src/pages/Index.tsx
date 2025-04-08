@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, Menu, Timer } from 'lucide-react';
+import { Clock, CheckSquare, Menu, Timer, Hourglass } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
@@ -25,7 +24,6 @@ const Index = () => {
   const { tasks, updateTask } = useTaskContext();
   const { timerState } = useTimerContext();
   
-  // Get today's tasks (tasks added today)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
@@ -35,13 +33,12 @@ const Index = () => {
     return taskDate.getTime() === today.getTime() && task.status !== 'completed';
   }).sort((a, b) => (a.order || 0) - (b.order || 0));
   
-  // Get priority tasks (urgent & important)
   const priorityTasks = tasks.filter(
     (task) => task.priority === 'both' && task.status !== 'completed'
   ).slice(0, 3);
 
-  // Drag and drop functionality
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
+  const [currentTask, setCurrentTask] = useState<string | null>(null);
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('taskId', taskId);
@@ -57,23 +54,18 @@ const Index = () => {
     const sourceTaskId = e.dataTransfer.getData('taskId');
     
     if (sourceTaskId && sourceTaskId !== targetTaskId) {
-      // Get the tasks we're reordering
       const sourceTask = todayTasks.find(task => task.id === sourceTaskId);
       const targetTask = todayTasks.find(task => task.id === targetTaskId);
       
       if (sourceTask && targetTask) {
-        // Create new orders for all tasks
         const updatedTasks = todayTasks.map(task => ({...task}));
         
         const sourceIndex = updatedTasks.findIndex(task => task.id === sourceTaskId);
         const targetIndex = updatedTasks.findIndex(task => task.id === targetTaskId);
         
-        // Remove source task
         const [removed] = updatedTasks.splice(sourceIndex, 1);
-        // Insert it at target position
         updatedTasks.splice(targetIndex, 0, removed);
         
-        // Update order values for all tasks
         updatedTasks.forEach((task, index) => {
           updateTask(task.id, { order: index });
         });
@@ -87,6 +79,14 @@ const Index = () => {
 
   const handleDragEnd = () => {
     setDraggedTask(null);
+  };
+
+  const startTimer = () => {
+    // Implement timer start logic
+  };
+
+  const startStopwatch = () => {
+    // Implement stopwatch start logic
   };
 
   return (
@@ -118,7 +118,7 @@ const Index = () => {
                         <span>Tâches</span>
                       </Link>
                       <Link to="/timer" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
-                        <Clock className="h-4 w-4 text-focus" />
+                        <Hourglass className="h-4 w-4 text-focus" />
                         <span>Timer Pomodoro</span>
                       </Link>
                       <Link to="/matrix" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
@@ -206,21 +206,39 @@ const Index = () => {
                           <p className="text-sm text-muted-foreground">{task.description}</p>
                           {task.dueDate && (
                             <div className="flex items-center gap-2 mt-1 text-xs">
-                              <Clock className="h-3 w-3 text-focus" />
+                              <Calendar className="h-3 w-3 text-focus" />
                               <span>Échéance: {new Date(task.dueDate).toLocaleDateString('fr-FR')}</span>
                             </div>
                           )}
                         </div>
-                        <Link to="/timer">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="gap-1"
-                          >
-                            <Clock className="h-4 w-4" />
-                            <span>Focus</span>
-                          </Button>
-                        </Link>
+                        <div className="flex gap-2">
+                          <Link to="/timer">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="gap-1"
+                              onClick={() => {
+                                setCurrentTask(task.id);
+                                startStopwatch();
+                              }}
+                            >
+                              <Timer className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Link to="/timer">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="gap-1"
+                              onClick={() => {
+                                setCurrentTask(task.id);
+                                startTimer();
+                              }}
+                            >
+                              <Hourglass className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
                     ))}
                     
@@ -289,7 +307,7 @@ const Index = () => {
                 <Tabs defaultValue="timer" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="timer">
-                      <Clock className="h-4 w-4 mr-2" />
+                      <Hourglass className="h-4 w-4 mr-2" />
                       Timer
                     </TabsTrigger>
                     <TabsTrigger value="stopwatch">

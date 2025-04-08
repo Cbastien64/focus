@@ -22,29 +22,6 @@ const EisenhowerMatrix: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  const handleDragOver = (e: React.DragEvent, priority: TaskPriority) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent, priority: TaskPriority) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('text/plain');
-    const task = tasks.find((t) => t.id === taskId);
-    
-    if (task && task.priority !== priority) {
-      // Create a new task with the new priority
-      addTask({
-        title: 'New Task',
-        description: 'Dropped task',
-        priority,
-        status: 'todo',
-        tags: [],
-        hashtags: [],
-        assignedTo: null,
-      });
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Matrice d'Eisenhower</h1>
@@ -55,8 +32,6 @@ const EisenhowerMatrix: React.FC = () => {
           description="À faire en premier"
           tasks={quadrantTasks.both}
           onAddTask={() => handleOpenForm('both')}
-          onDragOver={(e) => handleDragOver(e, 'both')}
-          onDrop={(e) => handleDrop(e, 'both')}
           colorClass="bg-red-500"
         />
         
@@ -65,8 +40,6 @@ const EisenhowerMatrix: React.FC = () => {
           description="À planifier"
           tasks={quadrantTasks.important}
           onAddTask={() => handleOpenForm('important')}
-          onDragOver={(e) => handleDragOver(e, 'important')}
-          onDrop={(e) => handleDrop(e, 'important')}
           colorClass="bg-blue-500"
         />
         
@@ -75,8 +48,6 @@ const EisenhowerMatrix: React.FC = () => {
           description="À déléguer"
           tasks={quadrantTasks.urgent}
           onAddTask={() => handleOpenForm('urgent')}
-          onDragOver={(e) => handleDragOver(e, 'urgent')}
-          onDrop={(e) => handleDrop(e, 'urgent')}
           colorClass="bg-yellow-500"
         />
         
@@ -85,8 +56,6 @@ const EisenhowerMatrix: React.FC = () => {
           description="À éliminer ou reporter"
           tasks={quadrantTasks.neither}
           onAddTask={() => handleOpenForm('neither')}
-          onDragOver={(e) => handleDragOver(e, 'neither')}
-          onDrop={(e) => handleDrop(e, 'neither')}
           colorClass="bg-gray-500"
         />
       </div>

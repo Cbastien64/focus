@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash, Timer, Calendar } from 'lucide-react';
+import { Clock, Edit, Trash, Copy, Hourglass, User, Hash, Timer, Calendar } from 'lucide-react';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -188,8 +187,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
             className="gap-1 bg-focus hover:bg-focus-dark"
             onClick={handleStartTimer}
           >
-            <TimerIcon className="h-4 w-4" />
-            <span>Focus</span>
+            <Hourglass className="h-4 w-4" />
           </Button>
         </div>
       </CardFooter>
