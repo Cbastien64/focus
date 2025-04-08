@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { TimerSettings, TimerState, TimerType } from '@/types';
 import { useTaskContext } from './TaskContext';
@@ -12,6 +13,13 @@ interface TimerContextProps {
   resetTimer: () => void;
   skipTimer: () => void;
   setCurrentTask: (taskId: string | null) => void;
+  // New stopwatch functionality
+  stopwatchTime: number;
+  isStopwatchRunning: boolean;
+  startStopwatch: () => void;
+  pauseStopwatch: () => void;
+  resetStopwatch: () => void;
+  saveStopwatchTime: () => void;
 }
 
 const DEFAULT_SETTINGS: TimerSettings = {
@@ -36,6 +44,11 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [timerState, setTimerState] = useState<TimerState>(DEFAULT_TIMER_STATE);
   const intervalRef = useRef<number | null>(null);
   const { incrementTaskTime } = useTaskContext();
+  
+  // New state for stopwatch
+  const [stopwatchTime, setStopwatchTime] = useState<number>(0);
+  const [isStopwatchRunning, setIsStopwatchRunning] = useState<boolean>(false);
+  const stopwatchIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (timerState.isRunning) {
@@ -132,6 +145,21 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [settings, timerState.type, timerState.isRunning]);
 
+  // Stopwatch effect
+  useEffect(() => {
+    if (isStopwatchRunning) {
+      stopwatchIntervalRef.current = window.setInterval(() => {
+        setStopwatchTime((prev) => prev + 1);
+      }, 1000);
+    }
+    
+    return () => {
+      if (stopwatchIntervalRef.current) {
+        clearInterval(stopwatchIntervalRef.current);
+      }
+    };
+  }, [isStopwatchRunning]);
+
   const updateSettings = (newSettings: Partial<TimerSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
@@ -219,6 +247,34 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTimerState((prev) => ({ ...prev, currentTaskId: taskId }));
   };
 
+  // Stopwatch functions
+  const startStopwatch = () => {
+    setIsStopwatchRunning(true);
+    // Stop the pomodoro timer if it's running
+    if (timerState.isRunning) {
+      pauseTimer();
+    }
+  };
+
+  const pauseStopwatch = () => {
+    setIsStopwatchRunning(false);
+  };
+
+  const resetStopwatch = () => {
+    pauseStopwatch();
+    setStopwatchTime(0);
+  };
+
+  const saveStopwatchTime = () => {
+    if (timerState.currentTaskId && stopwatchTime > 0) {
+      incrementTaskTime(timerState.currentTaskId, stopwatchTime);
+      toast.success("Temps enregistré pour la tâche sélectionnée");
+      resetStopwatch();
+    } else if (!timerState.currentTaskId && stopwatchTime > 0) {
+      toast.error("Aucune tâche sélectionnée");
+    }
+  };
+
   return (
     <TimerContext.Provider
       value={{
@@ -230,6 +286,13 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         resetTimer,
         skipTimer,
         setCurrentTask,
+        // Stopwatch values
+        stopwatchTime,
+        isStopwatchRunning,
+        startStopwatch,
+        pauseStopwatch,
+        resetStopwatch,
+        saveStopwatchTime,
       }}
     >
       {children}

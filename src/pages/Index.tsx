@@ -1,14 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, Menu } from 'lucide-react';
+import { Clock, CheckSquare, Menu, Stopwatch } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import TaskCard from '@/components/tasks/TaskCard';
 import TimerDisplay from '@/components/timer/TimerDisplay';
+import StopwatchDisplay from '@/components/timer/StopwatchDisplay';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -16,6 +17,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
   const { tasks } = useTaskContext();
@@ -214,28 +216,39 @@ const Index = () => {
           <div className="space-y-6">
             <Card className="overflow-hidden">
               <CardHeader>
-                <CardTitle>Timer</CardTitle>
+                <CardTitle>Gestion du temps</CardTitle>
                 <CardDescription>
-                  {timerState.type === 'focus'
-                    ? 'Session de concentration'
-                    : timerState.type === 'shortBreak'
-                    ? 'Courte pause'
-                    : 'Longue pause'}
+                  Pomodoro & Chronomètre
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex justify-center pb-6">
-                <TimerDisplay />
+                <Tabs defaultValue="timer" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="timer">
+                      <Clock className="h-4 w-4 mr-2" />
+                      Timer
+                    </TabsTrigger>
+                    <TabsTrigger value="stopwatch">
+                      <Stopwatch className="h-4 w-4 mr-2" />
+                      Chrono
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="timer" className="flex justify-center py-4">
+                    <TimerDisplay />
+                  </TabsContent>
+                  <TabsContent value="stopwatch" className="flex justify-center py-4">
+                    <StopwatchDisplay />
+                  </TabsContent>
+                </Tabs>
               </CardContent>
               <CardFooter className="bg-muted/50 justify-center">
                 <Link to="/timer">
                   <Button variant="outline" size="sm">
-                    Voir le timer complet
+                    Voir en plein écran
                   </Button>
                 </Link>
               </CardFooter>
             </Card>
-            
-            {/* Quick Navigation section has been removed as requested */}
           </div>
         </div>
       </div>

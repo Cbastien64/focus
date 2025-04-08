@@ -4,7 +4,6 @@ import { useTaskContext } from '@/context/TaskContext';
 import MatrixQuadrant from './MatrixQuadrant';
 import TaskForm from '../tasks/TaskForm';
 import { Task, TaskPriority } from '@/types';
-import { v4 as uuidv4 } from 'uuid';
 
 const EisenhowerMatrix: React.FC = () => {
   const { tasks, addTask } = useTaskContext();
@@ -42,7 +41,6 @@ const EisenhowerMatrix: React.FC = () => {
         tags: [],
         hashtags: [],
         assignedTo: null,
-        timeSpent: 0,
       });
     }
   };
@@ -56,40 +54,40 @@ const EisenhowerMatrix: React.FC = () => {
           title="Urgent & Important"
           description="À faire en premier"
           tasks={quadrantTasks.both}
-          color="bg-red-500"
           onCreateTask={() => handleOpenForm('both')}
           onDragOver={(e) => handleDragOver(e, 'both')}
           onDrop={(e) => handleDrop(e, 'both')}
+          colorClass="bg-red-500"
         />
         
         <MatrixQuadrant
           title="Important, Non-urgent"
           description="À planifier"
           tasks={quadrantTasks.important}
-          color="bg-blue-500"
           onCreateTask={() => handleOpenForm('important')}
           onDragOver={(e) => handleDragOver(e, 'important')}
           onDrop={(e) => handleDrop(e, 'important')}
+          colorClass="bg-blue-500"
         />
         
         <MatrixQuadrant
           title="Urgent, Non-important"
           description="À déléguer"
           tasks={quadrantTasks.urgent}
-          color="bg-yellow-500"
           onCreateTask={() => handleOpenForm('urgent')}
           onDragOver={(e) => handleDragOver(e, 'urgent')}
           onDrop={(e) => handleDrop(e, 'urgent')}
+          colorClass="bg-yellow-500"
         />
         
         <MatrixQuadrant
           title="Non-urgent, Non-important"
           description="À éliminer ou reporter"
           tasks={quadrantTasks.neither}
-          color="bg-gray-500"
           onCreateTask={() => handleOpenForm('neither')}
           onDragOver={(e) => handleDragOver(e, 'neither')}
           onDrop={(e) => handleDrop(e, 'neither')}
+          colorClass="bg-gray-500"
         />
       </div>
       

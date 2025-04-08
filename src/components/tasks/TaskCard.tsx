@@ -4,11 +4,18 @@ import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash } from 'lucide-react';
+import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash, Stopwatch } from 'lucide-react';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useNavigate } from 'react-router-dom';
 
 interface TaskCardProps {
   task: Task;
@@ -17,7 +24,8 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
   const { deleteTask, duplicateTask } = useTaskContext();
-  const { setCurrentTask, startTimer, timerState } = useTimerContext();
+  const { setCurrentTask, startTimer, timerState, startStopwatch } = useTimerContext();
+  const navigate = useNavigate();
   
   // Format time spent
   const formatTimeSpent = (seconds: number): string => {
@@ -48,6 +56,18 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
     if (!timerState.isRunning) {
       startTimer();
     }
+    
+    // Navigate to the timer page
+    navigate('/timer');
+  };
+  
+  // Handle start stopwatch button
+  const handleStartStopwatch = () => {
+    setCurrentTask(task.id);
+    startStopwatch();
+    
+    // Navigate to the timer page with stopwatch tab open
+    navigate('/timer');
   };
 
   return (
@@ -141,15 +161,35 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
           </Button>
         </div>
         
-        <Button 
-          variant="default" 
-          size="sm" 
-          className="gap-1 bg-focus hover:bg-focus-dark"
-          onClick={handleStartTimer}
-        >
-          <TimerIcon className="h-4 w-4" />
-          <span>Focus</span>
-        </Button>
+        <div className="flex gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-1"
+                  onClick={handleStartStopwatch}
+                >
+                  <Stopwatch className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Démarrer le chronomètre</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="gap-1 bg-focus hover:bg-focus-dark"
+            onClick={handleStartTimer}
+          >
+            <TimerIcon className="h-4 w-4" />
+            <span>Focus</span>
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

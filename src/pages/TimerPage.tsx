@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TimerDisplay from '@/components/timer/TimerDisplay';
+import StopwatchDisplay from '@/components/timer/StopwatchDisplay';
 import TimerSettings from '@/components/timer/TimerSettings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTaskContext } from '@/context/TaskContext';
@@ -9,6 +10,7 @@ import { useTimerContext } from '@/context/TimerContext';
 import { Button } from '@/components/ui/button';
 import { Check, X } from 'lucide-react';
 import { Task } from '@/types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TimerPage = () => {
   const { tasks } = useTaskContext();
@@ -30,7 +32,7 @@ const TimerPage = () => {
     <MainLayout>
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Timer Pomodoro</h1>
+          <h1 className="text-2xl font-bold">Gestion du temps</h1>
           <Button 
             variant="outline"
             onClick={() => setShowSettings(!showSettings)}
@@ -45,10 +47,21 @@ const TimerPage = () => {
           )}
           
           <div className="flex flex-col items-center justify-center py-8">
-            <TimerDisplay className="mb-10" />
+            <Tabs defaultValue="timer" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="timer">Timer Pomodoro</TabsTrigger>
+                <TabsTrigger value="stopwatch">Chronomètre</TabsTrigger>
+              </TabsList>
+              <TabsContent value="timer" className="flex justify-center py-8">
+                <TimerDisplay className="mb-10" />
+              </TabsContent>
+              <TabsContent value="stopwatch" className="flex justify-center py-8">
+                <StopwatchDisplay className="mb-10" />
+              </TabsContent>
+            </Tabs>
             
             {currentTask ? (
-              <Card className="w-full max-w-md">
+              <Card className="w-full max-w-md mt-6">
                 <CardHeader>
                   <CardTitle className="text-center text-lg">
                     Tâche en cours
@@ -70,7 +83,7 @@ const TimerPage = () => {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="w-full max-w-md">
+              <Card className="w-full max-w-md mt-6">
                 <CardHeader>
                   <CardTitle className="text-center text-lg">
                     Sélectionner une tâche
