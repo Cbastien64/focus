@@ -1,12 +1,13 @@
+
 import React from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash, Timer } from 'lucide-react';
+import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash, Timer, Calendar } from 'lucide-react';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { 
   Tooltip,
@@ -84,6 +85,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
         <p className="text-sm text-muted-foreground mb-3">
           {task.description}
         </p>
+        
+        {task.dueDate && (
+          <div className="flex items-center gap-2 mb-3 text-xs">
+            <Calendar className="h-3 w-3 text-focus" />
+            <span className="font-medium">
+              Échéance: {format(new Date(task.dueDate), 'dd/MM/yyyy', { locale: fr })}
+            </span>
+          </div>
+        )}
         
         <div className="flex flex-wrap gap-1 mb-2">
           {task.tags.map((tag) => (

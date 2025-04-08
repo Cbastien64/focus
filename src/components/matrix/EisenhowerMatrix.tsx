@@ -54,7 +54,7 @@ const EisenhowerMatrix: React.FC = () => {
           title="Urgent & Important"
           description="À faire en premier"
           tasks={quadrantTasks.both}
-          onOpenTaskForm={() => handleOpenForm('both')}
+          onAddTask={() => handleOpenForm('both')}
           onDragOver={(e) => handleDragOver(e, 'both')}
           onDrop={(e) => handleDrop(e, 'both')}
           colorClass="bg-red-500"
@@ -64,7 +64,7 @@ const EisenhowerMatrix: React.FC = () => {
           title="Important, Non-urgent"
           description="À planifier"
           tasks={quadrantTasks.important}
-          onOpenTaskForm={() => handleOpenForm('important')}
+          onAddTask={() => handleOpenForm('important')}
           onDragOver={(e) => handleDragOver(e, 'important')}
           onDrop={(e) => handleDrop(e, 'important')}
           colorClass="bg-blue-500"
@@ -74,7 +74,7 @@ const EisenhowerMatrix: React.FC = () => {
           title="Urgent, Non-important"
           description="À déléguer"
           tasks={quadrantTasks.urgent}
-          onOpenTaskForm={() => handleOpenForm('urgent')}
+          onAddTask={() => handleOpenForm('urgent')}
           onDragOver={(e) => handleDragOver(e, 'urgent')}
           onDrop={(e) => handleDrop(e, 'urgent')}
           colorClass="bg-yellow-500"
@@ -84,7 +84,7 @@ const EisenhowerMatrix: React.FC = () => {
           title="Non-urgent, Non-important"
           description="À éliminer ou reporter"
           tasks={quadrantTasks.neither}
-          onOpenTaskForm={() => handleOpenForm('neither')}
+          onAddTask={() => handleOpenForm('neither')}
           onDragOver={(e) => handleDragOver(e, 'neither')}
           onDrop={(e) => handleDrop(e, 'neither')}
           colorClass="bg-gray-500"

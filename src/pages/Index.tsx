@@ -10,6 +10,7 @@ import { useTimerContext } from '@/context/TimerContext';
 import TaskCard from '@/components/tasks/TaskCard';
 import TimerDisplay from '@/components/timer/TimerDisplay';
 import StopwatchDisplay from '@/components/timer/StopwatchDisplay';
+import { Task } from '@/types';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -18,9 +19,10 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 const Index = () => {
-  const { tasks } = useTaskContext();
+  const { tasks, updateTask } = useTaskContext();
   const { timerState } = useTimerContext();
   
   // Get today's tasks (tasks added today)
@@ -31,12 +33,61 @@ const Index = () => {
     const taskDate = new Date(task.createdAt);
     taskDate.setHours(0, 0, 0, 0);
     return taskDate.getTime() === today.getTime() && task.status !== 'completed';
-  });
+  }).sort((a, b) => (a.order || 0) - (b.order || 0));
   
   // Get priority tasks (urgent & important)
   const priorityTasks = tasks.filter(
     (task) => task.priority === 'both' && task.status !== 'completed'
   ).slice(0, 3);
+
+  // Drag and drop functionality
+  const [draggedTask, setDraggedTask] = useState<string | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, taskId: string) => {
+    e.dataTransfer.setData('taskId', taskId);
+    setDraggedTask(taskId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetTaskId: string) => {
+    e.preventDefault();
+    const sourceTaskId = e.dataTransfer.getData('taskId');
+    
+    if (sourceTaskId && sourceTaskId !== targetTaskId) {
+      // Get the tasks we're reordering
+      const sourceTask = todayTasks.find(task => task.id === sourceTaskId);
+      const targetTask = todayTasks.find(task => task.id === targetTaskId);
+      
+      if (sourceTask && targetTask) {
+        // Create new orders for all tasks
+        const updatedTasks = todayTasks.map(task => ({...task}));
+        
+        const sourceIndex = updatedTasks.findIndex(task => task.id === sourceTaskId);
+        const targetIndex = updatedTasks.findIndex(task => task.id === targetTaskId);
+        
+        // Remove source task
+        const [removed] = updatedTasks.splice(sourceIndex, 1);
+        // Insert it at target position
+        updatedTasks.splice(targetIndex, 0, removed);
+        
+        // Update order values for all tasks
+        updatedTasks.forEach((task, index) => {
+          updateTask(task.id, { order: index });
+        });
+        
+        toast.success("Ordre des tâches mis à jour");
+      }
+    }
+    
+    setDraggedTask(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedTask(null);
+  };
 
   return (
     <MainLayout>
@@ -132,7 +183,7 @@ const Index = () => {
               <CardHeader>
                 <CardTitle>Tâches du jour</CardTitle>
                 <CardDescription>
-                  Tâches créées aujourd'hui
+                  Tâches créées aujourd'hui (glissez-déposez pour réorganiser)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -141,11 +192,24 @@ const Index = () => {
                     {todayTasks.slice(0, 3).map((task) => (
                       <div
                         key={task.id}
-                        className="p-3 bg-muted/50 rounded-md flex items-center justify-between"
+                        className={`p-3 bg-muted/50 rounded-md flex items-center justify-between cursor-move ${
+                          draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
+                        }`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, task.id)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, task.id)}
+                        onDragEnd={handleDragEnd}
                       >
                         <div>
                           <h4 className="font-medium">{task.title}</h4>
                           <p className="text-sm text-muted-foreground">{task.description}</p>
+                          {task.dueDate && (
+                            <div className="flex items-center gap-2 mt-1 text-xs">
+                              <Clock className="h-3 w-3 text-focus" />
+                              <span>Échéance: {new Date(task.dueDate).toLocaleDateString('fr-FR')}</span>
+                            </div>
+                          )}
                         </div>
                         <Link to="/timer">
                           <Button 
