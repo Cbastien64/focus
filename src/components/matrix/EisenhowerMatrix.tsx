@@ -33,8 +33,8 @@ const EisenhowerMatrix: React.FC = () => {
     const task = tasks.find((t) => t.id === taskId);
     
     if (task && task.priority !== priority) {
+      // Create a new task with the new priority
       addTask({
-        id: uuidv4(),
         title: 'New Task',
         description: 'Dropped task',
         priority,
@@ -43,8 +43,6 @@ const EisenhowerMatrix: React.FC = () => {
         hashtags: [],
         assignedTo: null,
         timeSpent: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
     }
   };
@@ -56,7 +54,7 @@ const EisenhowerMatrix: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <MatrixQuadrant
           title="Urgent & Important"
-          subtitle="À faire en premier"
+          description="À faire en premier"
           tasks={quadrantTasks.both}
           color="bg-red-500"
           onCreateTask={() => handleOpenForm('both')}
@@ -66,7 +64,7 @@ const EisenhowerMatrix: React.FC = () => {
         
         <MatrixQuadrant
           title="Important, Non-urgent"
-          subtitle="À planifier"
+          description="À planifier"
           tasks={quadrantTasks.important}
           color="bg-blue-500"
           onCreateTask={() => handleOpenForm('important')}
@@ -76,7 +74,7 @@ const EisenhowerMatrix: React.FC = () => {
         
         <MatrixQuadrant
           title="Urgent, Non-important"
-          subtitle="À déléguer"
+          description="À déléguer"
           tasks={quadrantTasks.urgent}
           color="bg-yellow-500"
           onCreateTask={() => handleOpenForm('urgent')}
@@ -86,7 +84,7 @@ const EisenhowerMatrix: React.FC = () => {
         
         <MatrixQuadrant
           title="Non-urgent, Non-important"
-          subtitle="À éliminer ou reporter"
+          description="À éliminer ou reporter"
           tasks={quadrantTasks.neither}
           color="bg-gray-500"
           onCreateTask={() => handleOpenForm('neither')}

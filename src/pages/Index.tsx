@@ -3,12 +3,19 @@ import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, LayoutGrid, CalendarRange, Tag } from 'lucide-react';
+import { Clock, CheckSquare, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import TaskCard from '@/components/tasks/TaskCard';
 import TimerDisplay from '@/components/timer/TimerDisplay';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const Index = () => {
   const { tasks } = useTaskContext();
@@ -34,12 +41,54 @@ const Index = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Tableau de bord</h1>
-          <Link to="/tasks">
-            <Button className="gap-1 bg-focus hover:bg-focus-dark">
-              <CheckSquare className="h-4 w-4" />
-              <span>Toutes les tâches</span>
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/tasks">
+              <Button className="gap-1 bg-focus hover:bg-focus-dark">
+                <CheckSquare className="h-4 w-4" />
+                <span>Toutes les tâches</span>
+              </Button>
+            </Link>
+            
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>
+                    <Menu className="h-4 w-4" />
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid gap-2 p-4 w-60">
+                      <Link to="/" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <span>Accueil</span>
+                      </Link>
+                      <Link to="/tasks" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <CheckSquare className="h-4 w-4 text-focus" />
+                        <span>Tâches</span>
+                      </Link>
+                      <Link to="/timer" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <Clock className="h-4 w-4 text-focus" />
+                        <span>Timer Pomodoro</span>
+                      </Link>
+                      <Link to="/matrix" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <span>Matrice d'Eisenhower</span>
+                      </Link>
+                      <Link to="/calendar" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <span>Agenda</span>
+                      </Link>
+                      <Link to="/projects" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <span>Projets</span>
+                      </Link>
+                      <Link to="/collaborators" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <span>Collaborateurs</span>
+                      </Link>
+                      <Link to="/data" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <span>Données</span>
+                      </Link>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -186,50 +235,7 @@ const Index = () => {
               </CardFooter>
             </Card>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Navigation rapide</CardTitle>
-                <CardDescription>
-                  Accédez aux principales fonctionnalités
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-2">
-                <Link to="/tasks">
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    <CheckSquare className="h-4 w-4 text-focus" />
-                    <span>Tâches</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/timer">
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    <Clock className="h-4 w-4 text-focus" />
-                    <span>Timer Pomodoro</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/matrix">
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    <LayoutGrid className="h-4 w-4 text-focus" />
-                    <span>Matrice d'Eisenhower</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/calendar">
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    <CalendarRange className="h-4 w-4 text-focus" />
-                    <span>Agenda</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/tags">
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    <Tag className="h-4 w-4 text-focus" />
-                    <span>Gestion des tags</span>
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+            {/* Quick Navigation section has been removed as requested */}
           </div>
         </div>
       </div>
