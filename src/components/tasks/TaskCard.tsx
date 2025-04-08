@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash, Stopwatch } from 'lucide-react';
+import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash, Timer } from 'lucide-react';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -27,7 +26,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
   const { setCurrentTask, startTimer, timerState, startStopwatch } = useTimerContext();
   const navigate = useNavigate();
   
-  // Format time spent
   const formatTimeSpent = (seconds: number): string => {
     if (seconds < 60) {
       return `${seconds}s`;
@@ -43,30 +41,24 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
     return `${hours}h ${remainingMinutes}m`;
   };
   
-  // Get the priority class for styling
   const getPriorityClass = (): string => {
     return `task-priority-${task.priority}`;
   };
   
-  // Handle start timer button
   const handleStartTimer = () => {
     setCurrentTask(task.id);
     
-    // Only start the timer if it's not already running
     if (!timerState.isRunning) {
       startTimer();
     }
     
-    // Navigate to the timer page
     navigate('/timer');
   };
   
-  // Handle start stopwatch button
   const handleStartStopwatch = () => {
     setCurrentTask(task.id);
     startStopwatch();
     
-    // Navigate to the timer page with stopwatch tab open
     navigate('/timer');
   };
 
@@ -171,7 +163,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
                   className="gap-1"
                   onClick={handleStartStopwatch}
                 >
-                  <Stopwatch className="h-4 w-4" />
+                  <Timer className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

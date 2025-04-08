@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, Menu, Stopwatch } from 'lucide-react';
+import { Clock, CheckSquare, Menu, Timer } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
@@ -229,7 +229,7 @@ const Index = () => {
                       Timer
                     </TabsTrigger>
                     <TabsTrigger value="stopwatch">
-                      <Stopwatch className="h-4 w-4 mr-2" />
+                      <Timer className="h-4 w-4 mr-2" />
                       Chrono
                     </TabsTrigger>
                   </TabsList>

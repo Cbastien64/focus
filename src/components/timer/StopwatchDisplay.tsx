@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useTimerContext } from '@/context/TimerContext';
-import { Play, Pause, RotateCcw, Save } from 'lucide-react';
+import { Play, Pause, RotateCcw, Save, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface StopwatchDisplayProps {
