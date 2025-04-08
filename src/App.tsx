@@ -11,6 +11,7 @@ import MatrixPage from '@/pages/MatrixPage';
 import NotFound from '@/pages/NotFound';
 import ProjectsPage from '@/pages/ProjectsPage';
 import DataPage from '@/pages/DataPage';
+import CollaboratorsPage from '@/pages/CollaboratorsPage';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
             <Route path="/timer" element={<TimerPage />} />
             <Route path="/matrix" element={<MatrixPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/tags" element={<ProjectsPage />} />
+            <Route path="/collaborators" element={<CollaboratorsPage />} />
             <Route path="/data" element={<DataPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

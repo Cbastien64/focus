@@ -9,6 +9,15 @@ export interface Tag {
   color: string;
 }
 
+export interface Collaborator {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  organization: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -16,6 +25,8 @@ export interface Task {
   priority: TaskPriority;
   status: TaskStatus;
   tags: Tag[];
+  hashtags: string[];
+  assignedTo: Collaborator | null;
   timeSpent: number; // in seconds
   createdAt: Date;
   updatedAt: Date;

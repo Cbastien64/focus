@@ -4,7 +4,7 @@ import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Edit, Trash, Copy, TimerIcon } from 'lucide-react';
+import { Clock, Edit, Trash, Copy, TimerIcon, User, Hash } from 'lucide-react';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -73,7 +73,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
           {task.description}
         </p>
         
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 mb-2">
           {task.tags.map((tag) => (
             <Badge 
               key={tag.id} 
@@ -84,6 +84,28 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
             </Badge>
           ))}
         </div>
+        
+        {task.hashtags && task.hashtags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {task.hashtags.map((hashtag, index) => (
+              <Badge 
+                key={index} 
+                variant="secondary"
+                className="text-xs flex items-center gap-1"
+              >
+                <Hash className="h-3 w-3" />
+                {hashtag}
+              </Badge>
+            ))}
+          </div>
+        )}
+        
+        {task.assignedTo && (
+          <div className="flex items-center gap-2 mt-2 text-xs">
+            <User className="h-3 w-3" />
+            <span className="font-medium">{task.assignedTo.firstName} {task.assignedTo.lastName}</span>
+          </div>
+        )}
         
         <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" />

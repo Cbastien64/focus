@@ -1,12 +1,12 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Task, Tag, TaskPriority, TaskStatus } from '@/types';
+import { Task, Tag, TaskPriority, TaskStatus, Collaborator } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 
 interface TaskContextProps {
   tasks: Task[];
   tags: Tag[];
+  collaborators: Collaborator[];
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timeSpent'>) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
@@ -14,17 +14,40 @@ interface TaskContextProps {
   addTag: (name: string, color: string) => void;
   updateTag: (id: string, tag: Partial<Tag>) => void;
   deleteTag: (id: string) => void;
+  addCollaborator: (collaborator: Omit<Collaborator, 'id'>) => void;
+  updateCollaborator: (id: string, collaborator: Partial<Collaborator>) => void;
+  deleteCollaborator: (id: string) => void;
   incrementTaskTime: (id: string, seconds: number) => void;
 }
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
 
-// Projets initiaux
+// Initial projects
 const initialTags: Tag[] = [
   { id: uuidv4(), name: 'Travail', color: '#4f46e5' },
   { id: uuidv4(), name: 'Personnel', color: '#ec4899' },
   { id: uuidv4(), name: 'Études', color: '#0ea5e9' },
   { id: uuidv4(), name: 'Santé', color: '#10b981' },
+];
+
+// Initial collaborators
+const initialCollaborators: Collaborator[] = [
+  { 
+    id: uuidv4(), 
+    firstName: 'Jean', 
+    lastName: 'Dupont', 
+    email: 'jean.dupont@example.com',
+    phone: '01 23 45 67 89',
+    organization: 'Entreprise A'
+  },
+  { 
+    id: uuidv4(), 
+    firstName: 'Marie', 
+    lastName: 'Martin', 
+    email: 'marie.martin@example.com',
+    phone: '01 98 76 54 32',
+    organization: 'Entreprise B'
+  },
 ];
 
 // Sample tasks
@@ -36,6 +59,8 @@ const initialTasks: Task[] = [
     priority: 'both',
     status: 'todo',
     tags: [initialTags[0]],
+    hashtags: ['presentation', 'reunion', 'projet'],
+    assignedTo: initialCollaborators[0],
     timeSpent: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -47,6 +72,8 @@ const initialTasks: Task[] = [
     priority: 'important',
     status: 'todo',
     tags: [initialTags[3]],
+    hashtags: ['fitness', 'running'],
+    assignedTo: null,
     timeSpent: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -58,6 +85,8 @@ const initialTasks: Task[] = [
     priority: 'urgent',
     status: 'todo',
     tags: [initialTags[0]],
+    hashtags: ['communication', 'urgent'],
+    assignedTo: initialCollaborators[1],
     timeSpent: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -67,11 +96,27 @@ const initialTasks: Task[] = [
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [tags, setTags] = useState<Tag[]>(initialTags);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
+
+  // Extract hashtags from text
+  const extractHashtags = (text: string): string[] => {
+    const hashtagPattern = /#(\w+)/g;
+    const matches = text.match(hashtagPattern);
+    
+    if (!matches) return [];
+    
+    return matches.map(tag => tag.substring(1).toLowerCase());
+  };
 
   const addTask = (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timeSpent'>) => {
+    const titleHashtags = extractHashtags(task.title);
+    const descriptionHashtags = extractHashtags(task.description);
+    const allHashtags = [...new Set([...titleHashtags, ...descriptionHashtags])];
+    
     const newTask: Task = {
       ...task,
       id: uuidv4(),
+      hashtags: allHashtags,
       timeSpent: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -83,11 +128,21 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateTask = (id: string, task: Partial<Task>) => {
     setTasks((prevTasks) =>
-      prevTasks.map((t) =>
-        t.id === id
-          ? { ...t, ...task, updatedAt: new Date() }
-          : t
-      )
+      prevTasks.map((t) => {
+        if (t.id === id) {
+          const updatedTask = { ...t, ...task, updatedAt: new Date() };
+          
+          // Update hashtags if title or description changed
+          if (task.title || task.description) {
+            const titleHashtags = extractHashtags(task.title || t.title);
+            const descriptionHashtags = extractHashtags(task.description || t.description);
+            updatedTask.hashtags = [...new Set([...titleHashtags, ...descriptionHashtags])];
+          }
+          
+          return updatedTask;
+        }
+        return t;
+      })
     );
     toast.success('Tâche mise à jour');
   };
@@ -127,14 +182,12 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateTag = (id: string, tag: Partial<Tag>) => {
-    // Update the tag in the tags array
     setTags((prevTags) =>
       prevTags.map((t) =>
         t.id === id ? { ...t, ...tag } : t
       )
     );
 
-    // Update the tag references in all tasks
     setTasks((prevTasks) =>
       prevTasks.map((task) => {
         const updatedTags = task.tags.map((t) =>
@@ -179,11 +232,71 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
+  const addCollaborator = (collaborator: Omit<Collaborator, 'id'>) => {
+    const newCollaborator: Collaborator = {
+      ...collaborator,
+      id: uuidv4(),
+    };
+    
+    setCollaborators((prevCollaborators) => [...prevCollaborators, newCollaborator]);
+    toast.success('Collaborateur ajouté');
+  };
+
+  const updateCollaborator = (id: string, collaborator: Partial<Collaborator>) => {
+    setCollaborators((prevCollaborators) =>
+      prevCollaborators.map((c) =>
+        c.id === id ? { ...c, ...collaborator } : c
+      )
+    );
+    
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        if (task.assignedTo?.id === id) {
+          const updatedCollaborator = {
+            ...task.assignedTo,
+            ...collaborator
+          };
+          
+          return {
+            ...task,
+            assignedTo: updatedCollaborator,
+            updatedAt: new Date(),
+          };
+        }
+        return task;
+      })
+    );
+    
+    toast.success('Collaborateur mis à jour');
+  };
+
+  const deleteCollaborator = (id: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        if (task.assignedTo?.id === id) {
+          return {
+            ...task,
+            assignedTo: null,
+            updatedAt: new Date(),
+          };
+        }
+        return task;
+      })
+    );
+    
+    setCollaborators((prevCollaborators) => 
+      prevCollaborators.filter((c) => c.id !== id)
+    );
+    
+    toast.success('Collaborateur supprimé');
+  };
+
   return (
     <TaskContext.Provider
       value={{
         tasks,
         tags,
+        collaborators,
         addTask,
         updateTask,
         deleteTask,
@@ -191,6 +304,9 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addTag,
         updateTag,
         deleteTag,
+        addCollaborator,
+        updateCollaborator,
+        deleteCollaborator,
         incrementTaskTime,
       }}
     >
