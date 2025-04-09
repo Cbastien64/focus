@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import TaskForm from '@/components/tasks/TaskForm';
 
 const Index = () => {
   const { tasks, updateTask } = useTaskContext();
@@ -46,6 +47,8 @@ const Index = () => {
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [currentTask, setCurrentTask] = useState<string | null>(null);
   const [showWeeklyTasks, setShowWeeklyTasks] = useState<boolean>(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('taskId', taskId);
@@ -102,6 +105,11 @@ const Index = () => {
 
   const toggleWeeklyTasks = () => {
     setShowWeeklyTasks(!showWeeklyTasks);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    setIsFormOpen(true);
   };
 
   return (
@@ -205,7 +213,7 @@ const Index = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Tâches du jour</CardTitle>
-                    <CardDescription>
+                    <CardDescription className="mt-2">
                       Tâches créées aujourd'hui (glissez-déposez pour réorganiser)
                     </CardDescription>
                   </div>
@@ -222,7 +230,7 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 {showWeeklyTasks ? (
-                  <WeeklyTaskView onEditTask={() => {}} />
+                  <WeeklyTaskView onEditTask={handleEditTask} />
                 ) : (
                   <>
                     {todayTasks.length > 0 ? (
@@ -230,7 +238,7 @@ const Index = () => {
                         {todayTasks.slice(0, 3).map((task) => (
                           <div
                             key={task.id}
-                            className={`p-3 bg-muted/50 rounded-md flex items-center justify-between cursor-move ${
+                            className={`p-3 bg-muted/50 rounded-md flex items-center justify-between cursor-pointer ${
                               draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
                             }`}
                             draggable
@@ -238,6 +246,7 @@ const Index = () => {
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, task.id)}
                             onDragEnd={handleDragEnd}
+                            onClick={() => handleEditTask(task)}
                           >
                             <div>
                               <h4 className="font-medium">{task.title}</h4>
@@ -255,7 +264,8 @@ const Index = () => {
                                   variant="outline" 
                                   size="sm" 
                                   className="gap-1"
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setCurrentTask(task.id);
                                     startStopwatch();
                                   }}
@@ -268,7 +278,8 @@ const Index = () => {
                                   variant="outline" 
                                   size="sm" 
                                   className="gap-1"
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setCurrentTask(task.id);
                                     startTimer();
                                   }}
@@ -374,6 +385,12 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      <TaskForm 
+        open={isFormOpen} 
+        onOpenChange={setIsFormOpen} 
+        task={selectedTask}
+      />
     </MainLayout>
   );
 };
