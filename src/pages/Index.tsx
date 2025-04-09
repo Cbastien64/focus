@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, Menu, Timer, Hourglass, Calendar } from 'lucide-react';
+import { Clock, CheckSquare, Menu, Timer, Hourglass, Calendar, LayoutGrid, Folder, BarChart, Users, Home, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
@@ -118,8 +117,9 @@ const Index = () => {
                     <Menu className="h-4 w-4" />
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="grid gap-2 p-4 w-60">
+                    <div className="grid gap-2 p-4 w-60 max-h-[80vh] overflow-y-auto">
                       <Link to="/" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <Home className="h-4 w-4 text-focus" />
                         <span>Accueil</span>
                       </Link>
                       <Link to="/tasks" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
@@ -131,18 +131,23 @@ const Index = () => {
                         <span>Timer Pomodoro</span>
                       </Link>
                       <Link to="/matrix" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <LayoutGrid className="h-4 w-4 text-focus" />
                         <span>Matrice d'Eisenhower</span>
                       </Link>
                       <Link to="/calendar" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <Calendar className="h-4 w-4 text-focus" />
                         <span>Agenda</span>
                       </Link>
                       <Link to="/projects" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <Folder className="h-4 w-4 text-focus" />
                         <span>Projets</span>
                       </Link>
                       <Link to="/collaborators" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <Users className="h-4 w-4 text-focus" />
                         <span>Collaborateurs</span>
                       </Link>
                       <Link to="/data" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <BarChart className="h-4 w-4 text-focus" />
                         <span>Données</span>
                       </Link>
                     </div>

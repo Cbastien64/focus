@@ -11,9 +11,10 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
-  SidebarFooter
+  SidebarFooter,
+  SidebarRail
 } from '@/components/ui/sidebar';
-import { CheckSquare, Clock, LayoutGrid, Calendar, Settings, Folder, Home, BarChart, Users } from 'lucide-react';
+import { CheckSquare, Clock, LayoutGrid, Calendar, Settings, Folder, Home, BarChart, Users, Hourglass, Timer } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
@@ -24,7 +25,7 @@ const Sidebar: React.FC = () => {
   const menuItems = [
     { title: "Accueil", icon: Home, path: "/" },
     { title: "Tâches", icon: CheckSquare, path: "/tasks" },
-    { title: "Timer", icon: Clock, path: "/timer" },
+    { title: "Timer", icon: Hourglass, path: "/timer" },
     { title: "Matrice", icon: LayoutGrid, path: "/matrix" },
     { title: "Agenda", icon: Calendar, path: "/calendar" },
     { title: "Projets", icon: Folder, path: "/projects" },
@@ -68,6 +69,9 @@ const Sidebar: React.FC = () => {
           <span>Paramètres</span>
         </Link>
       </SidebarFooter>
+
+      {/* Add this rail to ensure the sidebar can be reopened when closed */}
+      <SidebarRail />
     </ShadcnSidebar>
   );
 };

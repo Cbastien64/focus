@@ -32,7 +32,7 @@ const EisenhowerMatrix: React.FC = () => {
           description="À faire en premier"
           tasks={quadrantTasks.both}
           onAddTask={() => handleOpenForm('both')}
-          bgColor="bg-red-500"
+          className="bg-red-500"
         />
         
         <MatrixQuadrant
@@ -40,7 +40,7 @@ const EisenhowerMatrix: React.FC = () => {
           description="À planifier"
           tasks={quadrantTasks.important}
           onAddTask={() => handleOpenForm('important')}
-          bgColor="bg-blue-500"
+          className="bg-blue-500"
         />
         
         <MatrixQuadrant
@@ -48,7 +48,7 @@ const EisenhowerMatrix: React.FC = () => {
           description="À déléguer"
           tasks={quadrantTasks.urgent}
           onAddTask={() => handleOpenForm('urgent')}
-          bgColor="bg-yellow-500"
+          className="bg-yellow-500"
         />
         
         <MatrixQuadrant
@@ -56,7 +56,7 @@ const EisenhowerMatrix: React.FC = () => {
           description="À éliminer ou reporter"
           tasks={quadrantTasks.neither}
           onAddTask={() => handleOpenForm('neither')}
-          bgColor="bg-gray-500"
+          className="bg-gray-500"
         />
       </div>
       
