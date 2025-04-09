@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import { useTimerContext } from '@/context/TimerContext';
 import TaskCard from '@/components/tasks/TaskCard';
 import TimerDisplay from '@/components/timer/TimerDisplay';
 import StopwatchDisplay from '@/components/timer/StopwatchDisplay';
+import WeeklyTaskView from '@/components/tasks/WeeklyTaskView';
 import { Task } from '@/types';
 import {
   NavigationMenu,
@@ -43,6 +45,7 @@ const Index = () => {
 
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [currentTask, setCurrentTask] = useState<string | null>(null);
+  const [showWeeklyTasks, setShowWeeklyTasks] = useState<boolean>(false);
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('taskId', taskId);
@@ -95,6 +98,10 @@ const Index = () => {
 
   const navigateToTasksWithFilter = (filter: 'all' | 'todo' | 'urgent') => {
     navigate('/tasks', { state: { filter } });
+  };
+
+  const toggleWeeklyTasks = () => {
+    setShowWeeklyTasks(!showWeeklyTasks);
   };
 
   return (
@@ -195,82 +202,101 @@ const Index = () => {
             
             <Card>
               <CardHeader>
-                <CardTitle>Tâches du jour</CardTitle>
-                <CardDescription>
-                  Tâches créées aujourd'hui (glissez-déposez pour réorganiser)
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Tâches du jour</CardTitle>
+                    <CardDescription>
+                      Tâches créées aujourd'hui (glissez-déposez pour réorganiser)
+                    </CardDescription>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={toggleWeeklyTasks}
+                    className="gap-1"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    {showWeeklyTasks ? 'Masquer la semaine' : 'Voir la semaine'}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
-                {todayTasks.length > 0 ? (
-                  <div className="space-y-4">
-                    {todayTasks.slice(0, 3).map((task) => (
-                      <div
-                        key={task.id}
-                        className={`p-3 bg-muted/50 rounded-md flex items-center justify-between cursor-move ${
-                          draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
-                        }`}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, task.id)}
-                        onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, task.id)}
-                        onDragEnd={handleDragEnd}
-                      >
-                        <div>
-                          <h4 className="font-medium">{task.title}</h4>
-                          <p className="text-sm text-muted-foreground">{task.description}</p>
-                          {task.dueDate && (
-                            <div className="flex items-center gap-2 mt-1 text-xs">
-                              <Calendar className="h-3 w-3 text-focus" />
-                              <span>Échéance: {new Date(task.dueDate).toLocaleDateString('fr-FR')}</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Link to="/timer">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="gap-1"
-                              onClick={() => {
-                                setCurrentTask(task.id);
-                                startStopwatch();
-                              }}
-                            >
-                              <Timer className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Link to="/timer">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="gap-1"
-                              onClick={() => {
-                                setCurrentTask(task.id);
-                                startTimer();
-                              }}
-                            >
-                              <Hourglass className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {todayTasks.length > 3 && (
-                      <Link to="/tasks" className="block text-sm text-focus hover:underline text-center mt-4">
-                        Voir {todayTasks.length - 3} autres tâches
-                      </Link>
-                    )}
-                  </div>
+                {showWeeklyTasks ? (
+                  <WeeklyTaskView onEditTask={() => {}} />
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Aucune tâche créée aujourd'hui</p>
-                    <Link to="/tasks" className="mt-2 inline-block">
-                      <Button variant="outline" size="sm">
-                        Créer une tâche
-                      </Button>
-                    </Link>
-                  </div>
+                  <>
+                    {todayTasks.length > 0 ? (
+                      <div className="space-y-4">
+                        {todayTasks.slice(0, 3).map((task) => (
+                          <div
+                            key={task.id}
+                            className={`p-3 bg-muted/50 rounded-md flex items-center justify-between cursor-move ${
+                              draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
+                            }`}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, task.id)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, task.id)}
+                            onDragEnd={handleDragEnd}
+                          >
+                            <div>
+                              <h4 className="font-medium">{task.title}</h4>
+                              <p className="text-sm text-muted-foreground">{task.description}</p>
+                              {task.dueDate && (
+                                <div className="flex items-center gap-2 mt-1 text-xs">
+                                  <Calendar className="h-3 w-3 text-focus" />
+                                  <span>Échéance: {new Date(task.dueDate).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-2">
+                              <Link to="/timer">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="gap-1"
+                                  onClick={() => {
+                                    setCurrentTask(task.id);
+                                    startStopwatch();
+                                  }}
+                                >
+                                  <Timer className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                              <Link to="/timer">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="gap-1"
+                                  onClick={() => {
+                                    setCurrentTask(task.id);
+                                    startTimer();
+                                  }}
+                                >
+                                  <Hourglass className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {todayTasks.length > 3 && (
+                          <Link to="/tasks" className="block text-sm text-focus hover:underline text-center mt-4">
+                            Voir {todayTasks.length - 3} autres tâches
+                          </Link>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground">Aucune tâche créée aujourd'hui</p>
+                        <Link to="/tasks" className="mt-2 inline-block">
+                          <Button variant="outline" size="sm">
+                            Créer une tâche
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>

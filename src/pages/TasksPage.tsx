@@ -6,6 +6,10 @@ import { useLocation } from 'react-router-dom';
 import { Task } from '@/types';
 import { useTaskContext } from '@/context/TaskContext';
 
+interface TaskGridProps {
+  tasks: Task[];
+}
+
 const TasksPage = () => {
   const location = useLocation();
   const { tasks } = useTaskContext();
