@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, Menu, Timer, Hourglass } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Clock, CheckSquare, Menu, Timer, Hourglass, Calendar } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import TaskCard from '@/components/tasks/TaskCard';
@@ -23,6 +24,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { tasks, updateTask } = useTaskContext();
   const { timerState } = useTimerContext();
+  const navigate = useNavigate();
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -36,6 +38,9 @@ const Index = () => {
   const priorityTasks = tasks.filter(
     (task) => task.priority === 'both' && task.status !== 'completed'
   ).slice(0, 3);
+
+  const todoTasks = tasks.filter((t) => t.status === 'todo');
+  const urgentTasks = tasks.filter((t) => t.priority === 'both' || t.priority === 'urgent');
 
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [currentTask, setCurrentTask] = useState<string | null>(null);
@@ -87,6 +92,10 @@ const Index = () => {
 
   const startStopwatch = () => {
     // Implement stopwatch start logic
+  };
+
+  const navigateToTasksWithFilter = (filter: 'all' | 'todo' | 'urgent') => {
+    navigate('/tasks', { state: { filter } });
   };
 
   return (
@@ -147,7 +156,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigateToTasksWithFilter('all')}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium">Tâches totales</CardTitle>
                 </CardHeader>
@@ -156,24 +165,24 @@ const Index = () => {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigateToTasksWithFilter('todo')}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium">À faire</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {tasks.filter((t) => t.status === 'todo').length}
+                    {todoTasks.length}
                   </div>
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigateToTasksWithFilter('urgent')}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium">Urgentes</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {tasks.filter((t) => t.priority === 'both' || t.priority === 'urgent').length}
+                    {urgentTasks.length}
                   </div>
                 </CardContent>
               </Card>
