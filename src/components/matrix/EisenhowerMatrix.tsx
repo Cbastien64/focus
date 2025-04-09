@@ -22,6 +22,11 @@ const EisenhowerMatrix: React.FC = () => {
     setIsFormOpen(true);
   };
 
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    setIsFormOpen(true);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Matrice d'Eisenhower</h1>
@@ -30,29 +35,37 @@ const EisenhowerMatrix: React.FC = () => {
         <MatrixQuadrant
           title="Urgent & Important"
           description="À faire en premier"
+          priority="both"
           tasks={quadrantTasks.both}
           onAddTask={() => handleOpenForm('both')}
+          onEditTask={handleEditTask}
         />
         
         <MatrixQuadrant
           title="Important, Non-urgent"
           description="À planifier"
+          priority="important"
           tasks={quadrantTasks.important}
           onAddTask={() => handleOpenForm('important')}
+          onEditTask={handleEditTask}
         />
         
         <MatrixQuadrant
           title="Urgent, Non-important"
           description="À déléguer"
+          priority="urgent"
           tasks={quadrantTasks.urgent}
           onAddTask={() => handleOpenForm('urgent')}
+          onEditTask={handleEditTask}
         />
         
         <MatrixQuadrant
           title="Non-urgent, Non-important"
           description="À éliminer ou reporter"
+          priority="neither"
           tasks={quadrantTasks.neither}
           onAddTask={() => handleOpenForm('neither')}
+          onEditTask={handleEditTask}
         />
       </div>
       

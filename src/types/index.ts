@@ -30,8 +30,9 @@ export interface Task {
   timeSpent: number; // in seconds
   createdAt: Date;
   updatedAt: Date;
-  dueDate?: Date | null; // Added due date
-  order?: number; // Added order for sorting
+  dueDate?: Date | null;
+  order?: number;
+  estimatedTime?: number; // in minutes (NEW)
 }
 
 export interface TimerSettings {

@@ -1,13 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { TaskPriority, TaskStatus, Task, Tag, Collaborator } from '@/types';
 import { useTaskContext } from '@/context/TaskContext';
-import { Check, AlertTriangle, Clock } from 'lucide-react';
+import { Check, AlertTriangle, Clock, Calendar } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import {
   Select,
   SelectContent,
@@ -18,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { cn } from '@/lib/utils';
 
 interface TaskFormProps {
   open: boolean;
@@ -35,6 +40,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [hashtags, setHashtags] = useState('');
   const [assignedToId, setAssignedToId] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [estimatedTime, setEstimatedTime] = useState<number>(0); // in minutes
+  const [isImportant, setIsImportant] = useState<boolean>(false);
+  const [isUrgent, setIsUrgent] = useState<boolean>(false);
   
   // Reset form when dialog opens/closes or task changes
   useEffect(() => {
@@ -46,6 +55,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       setSelectedTags(task.tags);
       setHashtags(task.hashtags ? task.hashtags.map(tag => `#${tag}`).join(' ') : '');
       setAssignedToId(task.assignedTo?.id || null);
+      setDueDate(task.dueDate || null);
+      setEstimatedTime(task.estimatedTime || 0);
+      
+      // Set importance and urgency based on priority
+      setIsImportant(task.priority === 'important' || task.priority === 'both');
+      setIsUrgent(task.priority === 'urgent' || task.priority === 'both');
     } else {
       setTitle('');
       setDescription('');
@@ -54,8 +69,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       setSelectedTags([]);
       setHashtags('');
       setAssignedToId(null);
+      setDueDate(null);
+      setEstimatedTime(0);
+      setIsImportant(false);
+      setIsUrgent(false);
     }
   }, [task, open]);
+  
+  // Update priority when importance or urgency changes
+  useEffect(() => {
+    if (isImportant && isUrgent) {
+      setPriority('both');
+    } else if (isImportant) {
+      setPriority('important');
+    } else if (isUrgent) {
+      setPriority('urgent');
+    } else {
+      setPriority('neither');
+    }
+  }, [isImportant, isUrgent]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +115,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
         tags: selectedTags,
         hashtags: hashtagsArray,
         assignedTo,
+        dueDate,
+        estimatedTime,
       });
     } else {
       addTask({
@@ -93,6 +127,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
         tags: selectedTags,
         hashtags: hashtagsArray,
         assignedTo,
+        dueDate,
+        estimatedTime,
       });
     }
     
@@ -107,11 +143,53 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
     }
   };
   
+  // Get priority label based on importance and urgency
+  const getPriorityLabel = (): string => {
+    if (isImportant && isUrgent) {
+      return 'À faire en premier';
+    } else if (isImportant && !isUrgent) {
+      return 'À planifier';
+    } else if (!isImportant && isUrgent) {
+      return 'À déléguer';
+    } else {
+      return 'À éliminer ou reporter';
+    }
+  };
+  
+  // Get color class for the priority badge
+  const getPriorityColorClass = (): string => {
+    if (priority === 'both') {
+      return 'bg-red-500';
+    } else if (priority === 'important') {
+      return 'bg-blue-500';
+    } else if (priority === 'urgent') {
+      return 'bg-yellow-500';
+    } else {
+      return 'bg-gray-500';
+    }
+  };
+
+  // Format the estimated time in a readable format
+  const formatEstimatedTime = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes} minutes`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    if (remainingMinutes === 0) {
+      return `${hours} heure${hours > 1 ? 's' : ''}`;
+    }
+    return `${hours} heure${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}`;
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>{task ? 'Modifier la tâche' : 'Nouvelle tâche'}</DialogTitle>
+          <DialogDescription>
+            {task ? 'Modifier les détails de la tâche' : 'Ajouter une nouvelle tâche'}
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -143,14 +221,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
               <div className="space-y-2">
                 <div className="font-medium text-sm">Importance</div>
                 <RadioGroup 
-                  value={priority === 'important' || priority === 'both' ? 'important' : 'not-important'}
-                  onValueChange={(value) => {
-                    if (value === 'important') {
-                      setPriority(priority === 'urgent' ? 'both' : 'important');
-                    } else {
-                      setPriority(priority === 'both' || priority === 'important' ? 'urgent' : 'neither');
-                    }
-                  }}
+                  value={isImportant ? 'important' : 'not-important'}
+                  onValueChange={(value) => setIsImportant(value === 'important')}
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="important" id="important" />
@@ -166,14 +238,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
               <div className="space-y-2">
                 <div className="font-medium text-sm">Urgence</div>
                 <RadioGroup 
-                  value={priority === 'urgent' || priority === 'both' ? 'urgent' : 'not-urgent'}
-                  onValueChange={(value) => {
-                    if (value === 'urgent') {
-                      setPriority(priority === 'important' ? 'both' : 'urgent');
-                    } else {
-                      setPriority(priority === 'both' || priority === 'urgent' ? 'important' : 'neither');
-                    }
-                  }}
+                  value={isUrgent ? 'urgent' : 'not-urgent'}
+                  onValueChange={(value) => setIsUrgent(value === 'urgent')}
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="urgent" id="urgent" />
@@ -189,20 +255,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
             
             <div className="flex items-center gap-2 mt-1">
               <Badge 
-                className={`${
-                  priority === 'both' ? 'bg-red-500' :
-                  priority === 'urgent' ? 'bg-yellow-500' :
-                  priority === 'important' ? 'bg-blue-500' :
-                  'bg-gray-500'
-                } text-white`}
+                className={`${getPriorityColorClass()} text-white`}
               >
-                {priority === 'both' ? 'Urgent & Important' : 
-                 priority === 'urgent' ? 'Urgent' : 
-                 priority === 'important' ? 'Important' : 'Standard'}
+                {isImportant && isUrgent ? 'Urgent & Important' : 
+                 isImportant ? 'Important' : 
+                 isUrgent ? 'Urgent' : 'Standard'}
               </Badge>
               
-              {priority === 'both' && <AlertTriangle className="h-4 w-4 text-red-500" />}
-              {priority === 'urgent' && <Clock className="h-4 w-4 text-yellow-500" />}
+              <span className="text-sm text-muted-foreground ml-1">{getPriorityLabel()}</span>
+              
+              {isImportant && isUrgent && <AlertTriangle className="h-4 w-4 text-red-500" />}
+              {isUrgent && !isImportant && <Clock className="h-4 w-4 text-yellow-500" />}
             </div>
           </div>
           
@@ -223,6 +286,52 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Date d'échéance</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !dueDate && "text-muted-foreground"
+                  )}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {dueDate ? format(dueDate, 'PPP', { locale: fr }) : "Sélectionner une date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={dueDate || undefined}
+                  onSelect={setDueDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="estimatedTime">Temps estimé (en minutes)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="estimatedTime"
+                type="number"
+                min="0"
+                value={estimatedTime}
+                onChange={(e) => setEstimatedTime(parseInt(e.target.value) || 0)}
+                placeholder="Temps estimé"
+                className="flex-1"
+              />
+              {estimatedTime > 0 && (
+                <div className="flex items-center text-sm text-muted-foreground">
+                  {formatEstimatedTime(estimatedTime)}
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="space-y-2">
