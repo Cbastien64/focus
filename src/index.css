@@ -100,30 +100,30 @@
 
 @layer components {
   .task-priority-both {
-    @apply bg-eisenhower-both text-white;
+    @apply bg-eisenhower-both text-white border-0;
   }
   
   .task-priority-urgent {
-    @apply bg-eisenhower-urgent text-white;
+    @apply bg-eisenhower-urgent text-white border-0;
   }
   
   .task-priority-important {
-    @apply bg-eisenhower-important text-white;
+    @apply bg-eisenhower-important text-white border-0;
   }
   
   .task-priority-neither {
-    @apply bg-eisenhower-neither text-white;
+    @apply bg-eisenhower-neither text-white border-0;
   }
   
   .task-status-todo {
-    @apply bg-[#F2FCE2] text-green-800 border-green-300;
+    @apply bg-[#F2FCE2] text-green-800 border-green-300 border-0;
   }
   
   .task-status-in-progress {
-    @apply bg-[#FEC6A1] text-orange-800 border-orange-300;
+    @apply bg-[#FEC6A1] text-orange-800 border-orange-300 border-0;
   }
   
   .task-status-completed {
-    @apply bg-[#FFDEE2] text-pink-800 border-pink-300;
+    @apply bg-[#FFDEE2] text-pink-800 border-pink-300 border-0;
   }
 }
