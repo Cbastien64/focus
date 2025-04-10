@@ -46,6 +46,32 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
     return `task-priority-${task.priority}`;
   };
   
+  const getStatusClass = (): string => {
+    switch (task.status) {
+      case 'todo':
+        return 'bg-[#F2FCE2] text-green-800 border border-green-300';
+      case 'in-progress':
+        return 'bg-[#FEC6A1] text-orange-800 border border-orange-300';
+      case 'completed':
+        return 'bg-[#FFDEE2] text-pink-800 border border-pink-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border border-gray-300';
+    }
+  };
+  
+  const getStatusLabel = (): string => {
+    switch (task.status) {
+      case 'todo':
+        return 'Liste de tâches';
+      case 'in-progress':
+        return 'En cours';
+      case 'completed':
+        return 'Terminée';
+      default:
+        return 'Liste de tâches';
+    }
+  };
+  
   const handleStartTimer = () => {
     setCurrentTask(task.id);
     
@@ -72,6 +98,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
               {task.priority === 'both' ? 'Urgent & Important' : 
                task.priority === 'urgent' ? 'Urgent' : 
                task.priority === 'important' ? 'Important' : 'Standard'}
+            </Badge>
+            <Badge className={getStatusClass()}>
+              {getStatusLabel()}
             </Badge>
             <span className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true, locale: fr })}

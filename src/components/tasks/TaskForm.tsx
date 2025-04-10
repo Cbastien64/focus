@@ -175,6 +175,34 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
     }
   };
 
+  // Get status badge color class
+  const getStatusColorClass = (): string => {
+    switch (status) {
+      case 'todo':
+        return 'bg-[#F2FCE2] text-green-800 border-green-300';
+      case 'in-progress':
+        return 'bg-[#FEC6A1] text-orange-800 border-orange-300';
+      case 'completed':
+        return 'bg-[#FFDEE2] text-pink-800 border-pink-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  // Get status label for display
+  const getStatusLabel = (): string => {
+    switch (status) {
+      case 'todo':
+        return 'Liste de tâches';
+      case 'in-progress':
+        return 'En cours';
+      case 'completed':
+        return 'Terminée';
+      default:
+        return 'Liste de tâches';
+    }
+  };
+
   // Format the estimated time in a readable format
   const formatEstimatedTime = (minutes: number | string): string => {
     const mins = Number(minutes);
@@ -297,10 +325,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
                 <SelectGroup>
                   <SelectItem value="todo">Liste de tâches</SelectItem>
                   <SelectItem value="in-progress">En cours</SelectItem>
-                  <SelectItem value="completed">Terminé</SelectItem>
+                  <SelectItem value="completed">Terminée</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
+            <div className="mt-2">
+              <Badge 
+                className={cn("px-2 py-1", getStatusColorClass())}
+              >
+                {getStatusLabel()}
+              </Badge>
+            </div>
           </div>
           
           <div className="space-y-2">

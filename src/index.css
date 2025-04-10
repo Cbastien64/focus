@@ -114,4 +114,16 @@
   .task-priority-neither {
     @apply bg-eisenhower-neither text-white;
   }
+  
+  .task-status-todo {
+    @apply bg-[#F2FCE2] text-green-800 border-green-300;
+  }
+  
+  .task-status-in-progress {
+    @apply bg-[#FEC6A1] text-orange-800 border-orange-300;
+  }
+  
+  .task-status-completed {
+    @apply bg-[#FFDEE2] text-pink-800 border-pink-300;
+  }
 }
