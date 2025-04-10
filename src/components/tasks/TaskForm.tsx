@@ -41,9 +41,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
   const [hashtags, setHashtags] = useState('');
   const [assignedToId, setAssignedToId] = useState<string | null>(null);
   const [dueDate, setDueDate] = useState<Date | null>(null);
-  const [estimatedTime, setEstimatedTime] = useState<number>(0); // in minutes
+  const [estimatedTime, setEstimatedTime] = useState<number | string>('');
   const [isImportant, setIsImportant] = useState<boolean>(false);
   const [isUrgent, setIsUrgent] = useState<boolean>(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   
   // Reset form when dialog opens/closes or task changes
   useEffect(() => {
@@ -56,7 +57,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       setHashtags(task.hashtags ? task.hashtags.map(tag => `#${tag}`).join(' ') : '');
       setAssignedToId(task.assignedTo?.id || null);
       setDueDate(task.dueDate || null);
-      setEstimatedTime(task.estimatedTime || 0);
+      setEstimatedTime(task.estimatedTime || '');
       
       // Set importance and urgency based on priority
       setIsImportant(task.priority === 'important' || task.priority === 'both');
@@ -70,7 +71,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       setHashtags('');
       setAssignedToId(null);
       setDueDate(null);
-      setEstimatedTime(0);
+      setEstimatedTime('');
       setIsImportant(false);
       setIsUrgent(false);
     }
@@ -106,6 +107,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
       ? collaborators.find(c => c.id === assignedToId) || null 
       : null;
     
+    // Convert estimatedTime to number
+    const estimatedTimeNum = typeof estimatedTime === 'string' && estimatedTime.trim() === '' 
+      ? 0 
+      : Number(estimatedTime);
+    
     if (task) {
       updateTask(task.id, {
         title,
@@ -116,7 +122,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
         hashtags: hashtagsArray,
         assignedTo,
         dueDate,
-        estimatedTime,
+        estimatedTime: estimatedTimeNum,
       });
     } else {
       addTask({
@@ -128,7 +134,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
         hashtags: hashtagsArray,
         assignedTo,
         dueDate,
-        estimatedTime,
+        estimatedTime: estimatedTimeNum,
       });
     }
     
@@ -170,16 +176,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
   };
 
   // Format the estimated time in a readable format
-  const formatEstimatedTime = (minutes: number): string => {
-    if (minutes < 60) {
-      return `${minutes} minutes`;
+  const formatEstimatedTime = (minutes: number | string): string => {
+    const mins = Number(minutes);
+    if (isNaN(mins) || mins <= 0) return '';
+    
+    if (mins < 60) {
+      return `${mins} minutes`;
     }
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
+    const hours = Math.floor(mins / 60);
+    const remainingMinutes = mins % 60;
     if (remainingMinutes === 0) {
       return `${hours} heure${hours > 1 ? 's' : ''}`;
     }
     return `${hours} heure${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}`;
+  };
+
+  // Handle calendar date selection
+  const handleDateSelect = (date: Date | undefined) => {
+    setDueDate(date || null);
+    // Don't close the calendar here
   };
   
   return (
@@ -280,7 +295,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="todo">À faire</SelectItem>
+                  <SelectItem value="todo">Liste de tâches</SelectItem>
                   <SelectItem value="in-progress">En cours</SelectItem>
                   <SelectItem value="completed">Terminé</SelectItem>
                 </SelectGroup>
@@ -290,7 +305,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
           
           <div className="space-y-2">
             <Label>Date d'échéance</Label>
-            <Popover>
+            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -307,9 +322,28 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
                 <CalendarComponent
                   mode="single"
                   selected={dueDate || undefined}
-                  onSelect={setDueDate}
+                  onSelect={handleDateSelect}
                   initialFocus
+                  className={cn("p-3 pointer-events-auto")}
                 />
+                <div className="p-2 border-t border-border flex justify-end gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => { 
+                      setDueDate(null);
+                      setIsCalendarOpen(false);
+                    }}
+                  >
+                    Effacer
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setIsCalendarOpen(false)}
+                  >
+                    OK
+                  </Button>
+                </div>
               </PopoverContent>
             </Popover>
           </div>
@@ -322,11 +356,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ open, onOpenChange, task }) => {
                 type="number"
                 min="0"
                 value={estimatedTime}
-                onChange={(e) => setEstimatedTime(parseInt(e.target.value) || 0)}
+                onChange={(e) => {
+                  // Allow empty values or numbers
+                  const value = e.target.value;
+                  if (value === '' || !isNaN(Number(value))) {
+                    setEstimatedTime(value);
+                  }
+                }}
                 placeholder="Temps estimé"
                 className="flex-1"
               />
-              {estimatedTime > 0 && (
+              {estimatedTime !== '' && Number(estimatedTime) > 0 && (
                 <div className="flex items-center text-sm text-muted-foreground">
                   {formatEstimatedTime(estimatedTime)}
                 </div>
