@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -248,8 +247,16 @@ const Index = () => {
                             onDragEnd={handleDragEnd}
                             onClick={() => handleEditTask(task)}
                           >
-                            <div>
-                              <h4 className="font-medium">{task.title}</h4>
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between">
+                                <h4 className="font-medium">{task.title}</h4>
+                                {task.estimatedTime && (
+                                  <div className="flex items-center text-xs text-muted-foreground ml-2">
+                                    <Clock className="h-3 w-3 mr-1 text-focus" />
+                                    <span>{task.estimatedTime} min</span>
+                                  </div>
+                                )}
+                              </div>
                               <p className="text-sm text-muted-foreground">{task.description}</p>
                               {task.dueDate && (
                                 <div className="flex items-center gap-2 mt-1 text-xs">
@@ -258,12 +265,12 @@ const Index = () => {
                                 </div>
                               )}
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex flex-col gap-2 ml-2">
                               <Link to="/timer">
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
-                                  className="gap-1"
+                                  className="w-full"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setCurrentTask(task.id);
@@ -277,7 +284,7 @@ const Index = () => {
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
-                                  className="gap-1"
+                                  className="w-full"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setCurrentTask(task.id);

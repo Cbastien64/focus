@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -78,6 +79,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
           </div>
           <h3 className="text-lg font-semibold mt-2">{task.title}</h3>
         </div>
+        {task.estimatedTime && (
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Clock className="h-3 w-3 mr-1 text-focus" />
+            <span>{task.estimatedTime} min</span>
+          </div>
+        )}
       </CardHeader>
       
       <CardContent>
