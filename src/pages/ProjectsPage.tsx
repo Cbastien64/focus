@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash, Info, Edit } from 'lucide-react';
 import { Tag } from '@/types';
+import ProjectTaskTable from '@/components/projects/ProjectTaskTable';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ProjectsPage = () => {
   const { tags, addTag, deleteTag, updateTag, tasks } = useTaskContext();
@@ -34,6 +36,7 @@ const ProjectsPage = () => {
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('#4f46e5');
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [activeTab, setActiveTab] = useState("tasks");
   
   const handleAddTag = () => {
     if (tagName.trim()) {
@@ -69,7 +72,7 @@ const ProjectsPage = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Gestion des Projets</h1>
           <Button 
@@ -81,68 +84,19 @@ const ProjectsPage = () => {
           </Button>
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Projets disponibles</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="tasks">Tâches par projet</TabsTrigger>
+            <TabsTrigger value="projects">Liste des projets</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="tasks" className="space-y-6">
             {tags.length > 0 ? (
-              <div className="space-y-2">
-                {tags.map((tag) => (
-                  <div
-                    key={tag.id}
-                    className="flex items-center justify-between p-3 bg-muted/50 rounded-md"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: tag.color }}
-                      ></div>
-                      <span className="font-medium">{tag.name}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Info className="h-3 w-3" />
-                        {getTagUsageCount(tag.id)} tâche{getTagUsageCount(tag.id) !== 1 ? 's' : ''}
-                      </span>
-
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-7 w-7" 
-                        onClick={() => openEditDialog(tag)}
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                      </Button>
-                      
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="icon" className="h-7 w-7">
-                            <Trash className="h-3.5 w-3.5" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer ce projet?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Cette action ne peut pas être annulée. Ce projet sera supprimé de toutes les tâches qui l'utilisent.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => deleteTag(tag.id)}>
-                              Supprimer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              tags.map((tag) => (
+                <ProjectTaskTable key={tag.id} tag={tag} />
+              ))
             ) : (
-              <div className="text-center py-8">
+              <div className="text-center py-8 bg-muted/30 rounded-md">
                 <p className="text-muted-foreground mb-4">Aucun projet disponible</p>
                 <Button 
                   variant="outline"
@@ -152,8 +106,84 @@ const ProjectsPage = () => {
                 </Button>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </TabsContent>
+          
+          <TabsContent value="projects">
+            <Card>
+              <CardHeader>
+                <CardTitle>Projets disponibles</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {tags.length > 0 ? (
+                  <div className="space-y-2">
+                    {tags.map((tag) => (
+                      <div
+                        key={tag.id}
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-md"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: tag.color }}
+                          ></div>
+                          <span className="font-medium">{tag.name}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Info className="h-3 w-3" />
+                            {getTagUsageCount(tag.id)} tâche{getTagUsageCount(tag.id) !== 1 ? 's' : ''}
+                          </span>
+
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-7 w-7" 
+                            onClick={() => openEditDialog(tag)}
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="icon" className="h-7 w-7">
+                                <Trash className="h-3.5 w-3.5" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Supprimer ce projet?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Cette action ne peut pas être annulée. Ce projet sera supprimé de toutes les tâches qui l'utilisent.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteTag(tag.id)}>
+                                  Supprimer
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground mb-4">Aucun projet disponible</p>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(true)}
+                    >
+                      Créer un projet
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
       
       {/* Add Project Dialog */}
