@@ -1,14 +1,13 @@
+
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckSquare, Menu, Timer, Hourglass, Calendar, LayoutGrid, Folder, BarChart, Users, Home, Settings } from 'lucide-react';
+import { Clock, CheckSquare, Menu, Calendar, LayoutGrid, Folder, BarChart, Users, Home, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTaskContext } from '@/context/TaskContext';
 import { useTimerContext } from '@/context/TimerContext';
 import TaskCard from '@/components/tasks/TaskCard';
-import TimerDisplay from '@/components/timer/TimerDisplay';
-import StopwatchDisplay from '@/components/timer/StopwatchDisplay';
 import WeeklyTaskView from '@/components/tasks/WeeklyTaskView';
 import { Task } from '@/types';
 import {
@@ -18,7 +17,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import TaskForm from '@/components/tasks/TaskForm';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -157,7 +155,7 @@ const Index = () => {
                         <span>Tâches</span>
                       </Link>
                       <Link to="/timer" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
-                        <Hourglass className="h-4 w-4 text-focus" />
+                        <Clock className="h-4 w-4 text-focus" />
                         <span>Timer Pomodoro</span>
                       </Link>
                       <Link to="/matrix" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
@@ -188,8 +186,8 @@ const Index = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 gap-6">
+          <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigateToTasksWithFilter('all')}>
                 <CardHeader className="pb-2">
@@ -250,71 +248,43 @@ const Index = () => {
                   <>
                     {todayTasks.length > 0 ? (
                       <div className="space-y-4">
-                        {todayTasks.slice(0, 3).map((task) => (
-                          <div
-                            key={task.id}
-                            className={`p-3 rounded-md flex items-center justify-between cursor-pointer ${
-                              getPriorityBgColor(task.priority)
-                            } ${
-                              draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : 'border'
-                            }`}
-                            draggable
-                            onDragStart={(e) => handleDragStart(e, task.id)}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, task.id)}
-                            onDragEnd={handleDragEnd}
-                            onClick={() => handleEditTask(task)}
-                          >
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between">
-                                <h4 className="font-medium">{task.title}</h4>
-                                {task.estimatedTime && (
-                                  <div className="flex items-center text-xs text-muted-foreground ml-2">
-                                    <Clock className="h-3 w-3 mr-1 text-focus" />
-                                    <span>{task.estimatedTime} min</span>
+                        <ScrollArea className="h-[300px] pr-4">
+                          {todayTasks.map((task) => (
+                            <div
+                              key={task.id}
+                              className={`p-3 rounded-md flex items-center justify-between cursor-pointer mb-4 ${
+                                getPriorityBgColor(task.priority)
+                              } ${
+                                draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : 'border'
+                              }`}
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, task.id)}
+                              onDragOver={handleDragOver}
+                              onDrop={(e) => handleDrop(e, task.id)}
+                              onDragEnd={handleDragEnd}
+                              onClick={() => handleEditTask(task)}
+                            >
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between">
+                                  <h4 className="font-medium">{task.title}</h4>
+                                  {task.estimatedTime && (
+                                    <div className="flex items-center text-xs text-muted-foreground ml-2">
+                                      <Clock className="h-3 w-3 mr-1 text-focus" />
+                                      <span>{task.estimatedTime} min</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">{task.description}</p>
+                                {task.dueDate && (
+                                  <div className="flex items-center gap-2 mt-1 text-xs">
+                                    <Calendar className="h-3 w-3 text-focus" />
+                                    <span>Échéance: {new Date(task.dueDate).toLocaleDateString('fr-FR')}</span>
                                   </div>
                                 )}
                               </div>
-                              <p className="text-sm text-muted-foreground">{task.description}</p>
-                              {task.dueDate && (
-                                <div className="flex items-center gap-2 mt-1 text-xs">
-                                  <Calendar className="h-3 w-3 text-focus" />
-                                  <span>Échéance: {new Date(task.dueDate).toLocaleDateString('fr-FR')}</span>
-                                </div>
-                              )}
                             </div>
-                            <div className="flex flex-col gap-2 ml-2">
-                              <Link to="/timer">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="w-full"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setCurrentTask(task.id);
-                                    startStopwatch();
-                                  }}
-                                >
-                                  <Timer className="h-4 w-4" />
-                                </Button>
-                              </Link>
-                              <Link to="/timer">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="w-full"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setCurrentTask(task.id);
-                                    startTimer();
-                                  }}
-                                >
-                                  <Hourglass className="h-4 w-4" />
-                                </Button>
-                              </Link>
-                            </div>
-                          </div>
-                        ))}
+                          ))}
+                        </ScrollArea>
                         
                         {todayTasks.length > 3 && (
                           <Link to="/tasks" className="block text-sm text-focus hover:underline text-center mt-4">
@@ -368,44 +338,6 @@ const Index = () => {
                   </div>
                 )}
               </CardContent>
-            </Card>
-          </div>
-          
-          <div className="space-y-6">
-            <Card className="overflow-hidden">
-              <CardHeader>
-                <CardTitle>Gestion du temps</CardTitle>
-                <CardDescription>
-                  Pomodoro & Chronomètre
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-center pb-6">
-                <Tabs defaultValue="timer" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="timer">
-                      <Hourglass className="h-4 w-4 mr-2" />
-                      Timer
-                    </TabsTrigger>
-                    <TabsTrigger value="stopwatch">
-                      <Timer className="h-4 w-4 mr-2" />
-                      Chrono
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="timer" className="flex justify-center py-4">
-                    <TimerDisplay />
-                  </TabsContent>
-                  <TabsContent value="stopwatch" className="flex justify-center py-4">
-                    <StopwatchDisplay />
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-              <CardFooter className="bg-muted/50 justify-center">
-                <Link to="/timer">
-                  <Button variant="outline" size="sm">
-                    Voir en plein écran
-                  </Button>
-                </Link>
-              </CardFooter>
             </Card>
           </div>
         </div>
