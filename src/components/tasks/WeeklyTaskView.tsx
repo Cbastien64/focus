@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import { useTaskContext } from '@/context/TaskContext';
 import TaskCard from './TaskCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface WeeklyTaskViewProps {
   onEditTask: (task: Task) => void;
@@ -117,45 +119,47 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
                   <span>{format(day, 'EEEE d', { locale: fr })}</span>
                 </h3>
                 
-                <div className="space-y-3 min-h-[150px]">
-                  {getTasksByDay(day).length > 0 ? (
-                    sortTasksByPriority(getTasksByDay(day)).map(task => (
-                      <div
-                        key={task.id}
-                        className={`p-2 rounded-md flex items-center justify-between cursor-move border ${
-                          getPriorityBgColor(task.priority)
-                        } ${
-                          draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
-                        }`}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, task.id)}
-                        onDragEnd={handleDragEnd}
-                      >
-                        <div className="w-full">
-                          <h4 className="font-medium text-sm">{task.title}</h4>
-                          <div className="flex items-center justify-between mt-1">
-                            <div
-                              className={`w-2 h-2 rounded-full ${
-                                task.priority === 'both'
-                                  ? 'bg-eisenhower-both'
-                                  : task.priority === 'urgent'
-                                  ? 'bg-eisenhower-urgent'
-                                  : task.priority === 'important'
-                                  ? 'bg-eisenhower-important'
-                                  : 'bg-eisenhower-neither'
-                              }`}
-                            />
-                            <MoveHorizontal className="h-3 w-3 text-muted-foreground" />
+                <ScrollArea className="h-[150px]">
+                  <div className="space-y-3 pr-2">
+                    {getTasksByDay(day).length > 0 ? (
+                      sortTasksByPriority(getTasksByDay(day)).map(task => (
+                        <div
+                          key={task.id}
+                          className={`p-2 rounded-md flex items-center justify-between cursor-move border ${
+                            getPriorityBgColor(task.priority)
+                          } ${
+                            draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
+                          }`}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, task.id)}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <div className="w-full">
+                            <h4 className="font-medium text-sm">{task.title}</h4>
+                            <div className="flex items-center justify-between mt-1">
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  task.priority === 'both'
+                                    ? 'bg-eisenhower-both'
+                                    : task.priority === 'urgent'
+                                    ? 'bg-eisenhower-urgent'
+                                    : task.priority === 'important'
+                                    ? 'bg-eisenhower-important'
+                                    : 'bg-eisenhower-neither'
+                                }`}
+                              />
+                              <MoveHorizontal className="h-3 w-3 text-muted-foreground" />
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-sm text-muted-foreground">
+                        Aucune tâche
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-sm text-muted-foreground">
-                      Aucune tâche
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                </ScrollArea>
               </div>
             ))}
           </div>

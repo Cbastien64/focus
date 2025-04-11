@@ -21,6 +21,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import TaskForm from '@/components/tasks/TaskForm';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Index = () => {
   const { tasks, updateTask } = useTaskContext();

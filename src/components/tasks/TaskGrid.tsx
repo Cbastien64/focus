@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTaskContext } from '@/context/TaskContext';
 import TaskCard from './TaskCard';
@@ -6,6 +5,7 @@ import TaskForm from './TaskForm';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter } from 'lucide-react';
 import { Task, TaskPriority, TaskStatus } from '@/types';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -48,19 +48,15 @@ const TaskGrid: React.FC = () => {
     }
   };
   
-  // Filter tasks
   const filteredTasks = tasks.filter((task) => {
-    // Filter by status
     if (statusFilter !== 'all' && task.status !== statusFilter) {
       return false;
     }
     
-    // Filter by priority
     if (priorityFilter !== 'all' && task.priority !== priorityFilter) {
       return false;
     }
     
-    // Filter by tags
     if (tagFilter.length > 0) {
       const taskHasFilteredTag = task.tags.some((tag) => tagFilter.includes(tag.id));
       if (!taskHasFilteredTag) {
@@ -145,11 +141,13 @@ const TaskGrid: React.FC = () => {
       </div>
       
       {filteredTasks.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTasks.map((task) => (
-            <TaskCard key={task.id} task={task} onEdit={handleEdit} />
-          ))}
-        </div>
+        <ScrollArea className="h-[calc(100vh-200px)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pr-4">
+            {filteredTasks.map((task) => (
+              <TaskCard key={task.id} task={task} onEdit={handleEdit} />
+            ))}
+          </div>
+        </ScrollArea>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="text-muted-foreground mb-4">
