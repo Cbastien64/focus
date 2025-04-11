@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 
 interface StopwatchDisplayProps {
   className?: string;
+  compact?: boolean;
 }
 
-const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({ className }) => {
+const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({ className, compact = false }) => {
   const { 
     stopwatchTime, 
     isStopwatchRunning, 
@@ -29,13 +30,19 @@ const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({ className }) => {
     return `${hoursStr}${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  // Generate size based on compact prop
+  const getCircleSize = () => compact ? 'w-36 h-36' : 'w-72 h-72';
+  const getHeadingSize = () => compact ? 'text-lg' : 'text-2xl';
+  const getTimeSize = () => compact ? 'text-xl' : 'text-3xl';
+  const getButtonSize = () => compact ? 'h-7 w-7 min-w-7' : '';
+
   return (
     <div className={`flex flex-col items-center ${className}`}>
-      <h2 className="text-2xl font-semibold mb-2 text-yellow-500">
+      <h2 className={`${getHeadingSize()} font-semibold mb-2 text-yellow-500`}>
         Chronomètre
       </h2>
       
-      <div className="mb-6 relative w-72 h-72">
+      <div className={`mb-3 relative ${getCircleSize()}`}>
         <svg className="w-full h-full" viewBox="0 0 100 100">
           {/* Background circle */}
           <circle
@@ -68,7 +75,7 @@ const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({ className }) => {
             x="50"
             y="55"
             textAnchor="middle"
-            className="text-3xl font-bold text-yellow-500"
+            className={`${getTimeSize()} font-bold text-yellow-500`}
             fill="currentColor"
           >
             {formatTime(stopwatchTime)}
@@ -80,45 +87,54 @@ const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({ className }) => {
         {!isStopwatchRunning ? (
           <Button 
             variant="default"
-            className="bg-yellow-500 hover:bg-yellow-600"
-            size="icon"
+            className={`bg-yellow-500 hover:bg-yellow-600 ${getButtonSize()}`}
+            size={compact ? "sm" : "icon"}
             onClick={startStopwatch}
             title="Démarrer"
           >
-            <Play className="h-5 w-5" />
+            <Play className={compact ? "h-3 w-3" : "h-5 w-5"} />
           </Button>
         ) : (
           <Button 
             variant="outline"
-            size="icon"
+            size={compact ? "sm" : "icon"}
+            className={getButtonSize()}
             onClick={pauseStopwatch}
             title="Pause"
           >
-            <Pause className="h-5 w-5" />
+            <Pause className={compact ? "h-3 w-3" : "h-5 w-5"} />
           </Button>
         )}
         
         <Button 
           variant="outline"
-          size="icon"
+          size={compact ? "sm" : "icon"}
+          className={getButtonSize()}
           onClick={resetStopwatch}
           title="Réinitialiser"
         >
-          <RotateCcw className="h-5 w-5" />
+          <RotateCcw className={compact ? "h-3 w-3" : "h-5 w-5"} />
         </Button>
         
         <Button 
           variant="outline"
-          size="icon"
+          size={compact ? "sm" : "icon"}
+          className={getButtonSize()}
           onClick={saveStopwatchTime}
           title="Enregistrer le temps"
           disabled={stopwatchTime === 0 || !timerState.currentTaskId}
         >
-          <Save className="h-5 w-5" />
+          <Save className={compact ? "h-3 w-3" : "h-5 w-5"} />
         </Button>
       </div>
       
-      {stopwatchTime > 0 && !timerState.currentTaskId && (
+      {compact && stopwatchTime > 0 && !timerState.currentTaskId && (
+        <p className="text-xs text-muted-foreground mt-1 text-center">
+          Sélectionnez une tâche
+        </p>
+      )}
+
+      {!compact && stopwatchTime > 0 && !timerState.currentTaskId && (
         <p className="text-sm text-muted-foreground mt-2">
           Sélectionnez une tâche pour enregistrer ce temps
         </p>

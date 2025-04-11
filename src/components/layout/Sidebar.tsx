@@ -67,34 +67,34 @@ const Sidebar: React.FC = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Time Management Section */}
+        {/* Time Management Section - Optimized for Sidebar */}
         <SidebarGroup>
           <SidebarGroupLabel>Gestion du temps</SidebarGroupLabel>
           <SidebarGroupContent>
-            <Card className="overflow-hidden bg-sidebar border-sidebar-border">
-              <CardContent className="p-3">
+            <Card className="overflow-hidden bg-sidebar border-sidebar-border shadow-none">
+              <CardContent className="p-2">
                 <Tabs defaultValue="timer" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-3">
-                    <TabsTrigger value="timer">
-                      <Hourglass className="h-4 w-4 mr-2" />
+                  <TabsList className="grid w-full grid-cols-2 mb-2">
+                    <TabsTrigger value="timer" className="text-xs py-1">
+                      <Hourglass className="h-3 w-3 mr-1" />
                       Timer
                     </TabsTrigger>
-                    <TabsTrigger value="stopwatch">
-                      <Timer className="h-4 w-4 mr-2" />
+                    <TabsTrigger value="stopwatch" className="text-xs py-1">
+                      <Timer className="h-3 w-3 mr-1" />
                       Chrono
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="timer" className="flex justify-center py-2">
-                    <TimerDisplay />
+                    <TimerDisplay compact={true} />
                   </TabsContent>
                   <TabsContent value="stopwatch" className="flex justify-center py-2">
-                    <StopwatchDisplay />
+                    <StopwatchDisplay compact={true} />
                   </TabsContent>
                 </Tabs>
               </CardContent>
-              <CardFooter className="bg-muted/50 justify-center p-2">
+              <CardFooter className="bg-muted/50 justify-center p-1">
                 <Link to="/timer">
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full text-xs py-1 h-7">
                     Voir en plein écran
                   </Button>
                 </Link>

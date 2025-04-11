@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 
 interface TimerDisplayProps {
   className?: string;
+  compact?: boolean;
 }
 
-const TimerDisplay: React.FC<TimerDisplayProps> = ({ className }) => {
+const TimerDisplay: React.FC<TimerDisplayProps> = ({ className, compact = false }) => {
   const { timerState, startTimer, pauseTimer, resetTimer, skipTimer } = useTimerContext();
   
   // Format time as MM:SS
@@ -46,13 +47,19 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ className }) => {
     }
   };
 
+  // Generate size based on compact prop
+  const getCircleSize = () => compact ? 'w-36 h-36' : 'w-72 h-72';
+  const getHeadingSize = () => compact ? 'text-lg' : 'text-2xl';
+  const getTimeSize = () => compact ? 'text-xl' : 'text-3xl';
+  const getButtonSize = () => compact ? 'h-7 w-7 min-w-7' : '';
+
   return (
     <div className={`flex flex-col items-center ${className}`}>
-      <h2 className={`text-2xl font-semibold mb-2 ${getTimerColor()}`}>
+      <h2 className={`${getHeadingSize()} font-semibold mb-2 ${getTimerColor()}`}>
         {getTimerTitle()}
       </h2>
       
-      <div className="mb-6 relative w-72 h-72">
+      <div className={`mb-3 relative ${getCircleSize()}`}>
         <svg className="w-full h-full" viewBox="0 0 100 100">
           {/* Background circle */}
           <circle
@@ -92,7 +99,7 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ className }) => {
             x="50"
             y="55"
             textAnchor="middle"
-            className={`text-3xl font-bold ${getTimerColor()}`}
+            className={`${getTimeSize()} font-bold ${getTimerColor()}`}
             fill="currentColor"
           >
             {formatTime(timerState.timeRemaining)}
@@ -104,40 +111,43 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ className }) => {
         {!timerState.isRunning ? (
           <Button 
             variant="default"
-            className="bg-focus hover:bg-focus-dark"
-            size="icon"
+            className={`bg-focus hover:bg-focus-dark ${getButtonSize()}`}
+            size={compact ? "sm" : "icon"}
             onClick={startTimer}
             title="Démarrer"
           >
-            <Play className="h-5 w-5" />
+            <Play className={compact ? "h-3 w-3" : "h-5 w-5"} />
           </Button>
         ) : (
           <Button 
             variant="outline"
-            size="icon"
+            size={compact ? "sm" : "icon"}
+            className={getButtonSize()}
             onClick={pauseTimer}
             title="Pause"
           >
-            <Pause className="h-5 w-5" />
+            <Pause className={compact ? "h-3 w-3" : "h-5 w-5"} />
           </Button>
         )}
         
         <Button 
           variant="outline"
-          size="icon"
+          size={compact ? "sm" : "icon"}
+          className={getButtonSize()}
           onClick={resetTimer}
           title="Réinitialiser"
         >
-          <RotateCcw className="h-5 w-5" />
+          <RotateCcw className={compact ? "h-3 w-3" : "h-5 w-5"} />
         </Button>
         
         <Button 
           variant="outline"
-          size="icon"
+          size={compact ? "sm" : "icon"}
+          className={getButtonSize()}
           onClick={skipTimer}
           title="Passer"
         >
-          <SkipForward className="h-5 w-5" />
+          <SkipForward className={compact ? "h-3 w-3" : "h-5 w-5"} />
         </Button>
       </div>
     </div>
