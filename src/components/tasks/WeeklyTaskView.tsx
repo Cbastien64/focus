@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,6 +38,21 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
 
   const sortTasksByPriority = (tasksToSort: Task[]) => {
     return [...tasksToSort].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  };
+
+  const getPriorityBgColor = (priority: string): string => {
+    switch (priority) {
+      case 'both':
+        return 'bg-eisenhower-both/20 border-eisenhower-both';
+      case 'urgent':
+        return 'bg-eisenhower-urgent/20 border-eisenhower-urgent';
+      case 'important':
+        return 'bg-eisenhower-important/20 border-eisenhower-important';
+      case 'neither':
+        return 'bg-eisenhower-neither/20 border-eisenhower-neither';
+      default:
+        return 'bg-muted/50';
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
@@ -108,7 +122,9 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
                     sortTasksByPriority(getTasksByDay(day)).map(task => (
                       <div
                         key={task.id}
-                        className={`p-2 bg-muted/50 rounded-md flex items-center justify-between cursor-move ${
+                        className={`p-2 rounded-md flex items-center justify-between cursor-move border ${
+                          getPriorityBgColor(task.priority)
+                        } ${
                           draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
                         }`}
                         draggable
@@ -121,12 +137,12 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
                             <div
                               className={`w-2 h-2 rounded-full ${
                                 task.priority === 'both'
-                                  ? 'bg-red-500'
+                                  ? 'bg-eisenhower-both'
                                   : task.priority === 'urgent'
-                                  ? 'bg-yellow-500'
+                                  ? 'bg-eisenhower-urgent'
                                   : task.priority === 'important'
-                                  ? 'bg-blue-500'
-                                  : 'bg-gray-500'
+                                  ? 'bg-eisenhower-important'
+                                  : 'bg-eisenhower-neither'
                               }`}
                             />
                             <MoveHorizontal className="h-3 w-3 text-muted-foreground" />
@@ -149,12 +165,12 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
               <div key={priority} className="space-y-2">
                 <h3 className={`text-md font-medium ${
                   priority === 'both'
-                    ? 'text-red-500'
+                    ? 'text-eisenhower-both'
                     : priority === 'urgent'
-                    ? 'text-yellow-500'
+                    ? 'text-eisenhower-urgent'
                     : priority === 'important'
-                    ? 'text-blue-500'
-                    : 'text-gray-500'
+                    ? 'text-eisenhower-important'
+                    : 'text-eisenhower-neither'
                 }`}>
                   {priority === 'both'
                     ? 'Urgent & Important'
@@ -174,7 +190,9 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
                   ).map(task => (
                     <div
                       key={task.id}
-                      className={`p-3 bg-muted/50 rounded-md flex flex-col cursor-move ${
+                      className={`p-3 rounded-md flex flex-col cursor-move border ${
+                        getPriorityBgColor(task.priority)
+                      } ${
                         draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
                       }`}
                       draggable

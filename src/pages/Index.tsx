@@ -49,6 +49,21 @@ const Index = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
 
+  const getPriorityBgColor = (priority: string): string => {
+    switch (priority) {
+      case 'both':
+        return 'bg-eisenhower-both/20 border-eisenhower-both';
+      case 'urgent':
+        return 'bg-eisenhower-urgent/20 border-eisenhower-urgent';
+      case 'important':
+        return 'bg-eisenhower-important/20 border-eisenhower-important';
+      case 'neither':
+        return 'bg-eisenhower-neither/20 border-eisenhower-neither';
+      default:
+        return 'bg-muted/50';
+    }
+  };
+
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('taskId', taskId);
     setDraggedTask(taskId);
@@ -237,8 +252,10 @@ const Index = () => {
                         {todayTasks.slice(0, 3).map((task) => (
                           <div
                             key={task.id}
-                            className={`p-3 bg-muted/50 rounded-md flex items-center justify-between cursor-pointer ${
-                              draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : ''
+                            className={`p-3 rounded-md flex items-center justify-between cursor-pointer ${
+                              getPriorityBgColor(task.priority)
+                            } ${
+                              draggedTask === task.id ? 'opacity-50 border-2 border-dashed border-focus' : 'border'
                             }`}
                             draggable
                             onDragStart={(e) => handleDragStart(e, task.id)}
