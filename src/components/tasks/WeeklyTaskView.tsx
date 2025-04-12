@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -120,7 +121,7 @@ const WeeklyTaskView: React.FC<WeeklyTaskViewProps> = ({ onEditTask }) => {
               </h3>
             </div>
             
-            <ScrollArea className="w-full">
+            <ScrollArea className="w-full" orientation="horizontal">
               <div className="flex space-x-4 pb-4">
                 {weekDays.map((day) => (
                   <div 
