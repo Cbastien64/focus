@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Bold, Italic, Underline, List, ListOrdered, Link, Paperclip, Highlighter, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -145,21 +144,17 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Link className="h-4 w-4" />
         </Button>
         
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          component="label" 
-          htmlFor="file-upload"
-          title="Joindre un fichier"
-        >
-          <Paperclip className="h-4 w-4" />
+        <label htmlFor="file-upload" title="Upload file" className="cursor-pointer">
+          <Button variant="ghost" size="sm">
+            <Paperclip className="h-4 w-4" />
+          </Button>
           <input
             id="file-upload"
             type="file"
             className="hidden"
             onChange={handleFileChange}
           />
-        </Button>
+        </label>
       </div>
       
       <Textarea

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> & {
-    orientation?: "vertical" | "horizontal"
+    orientation?: "vertical" | "horizontal" | "both"
   }
 >(({ className, children, orientation = "vertical", ...props }, ref) => (
   <ScrollAreaPrimitive.Root
@@ -18,8 +18,13 @@ const ScrollArea = React.forwardRef<
     <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
       {children}
     </ScrollAreaPrimitive.Viewport>
-    <ScrollBar orientation={orientation} />
-    {orientation === "horizontal" && <ScrollBar orientation="vertical" />}
+    <ScrollBar orientation={orientation === "horizontal" ? "horizontal" : "vertical"} />
+    {(orientation === "both" || (orientation === "vertical" && props.dir !== "rtl")) && (
+      <ScrollBar orientation="horizontal" />
+    )}
+    {(orientation === "both" || (orientation === "horizontal" && props.dir !== "rtl")) && (
+      <ScrollBar orientation="vertical" />
+    )}
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 ))
