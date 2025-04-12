@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import TaskForm from '@/components/tasks/TaskForm';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import ObjectivesBlock from '@/components/objectives/ObjectivesBlock';
 
 const Index = () => {
   const { tasks, updateTask } = useTaskContext();
@@ -184,6 +185,25 @@ const Index = () => {
               </NavigationMenuList>
             </NavigationMenu>
           </div>
+        </div>
+        
+        {/* Objectives Blocks */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <ObjectivesBlock 
+            title="Objectifs du mois" 
+            description="Définissez vos 3 objectifs prioritaires pour ce mois"
+            storageKey="monthly-objectives"
+          />
+          <ObjectivesBlock 
+            title="Objectifs de la semaine" 
+            description="Définissez vos 3 objectifs pour cette semaine"
+            storageKey="weekly-objectives"
+          />
+          <ObjectivesBlock 
+            title="Objectifs du jour" 
+            description="Définissez vos 3 objectifs pour aujourd'hui"
+            storageKey="daily-objectives"
+          />
         </div>
         
         <div className="grid grid-cols-1 gap-6">
